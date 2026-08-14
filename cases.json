@@ -1,0 +1,172 @@
+{
+  "_readme": "Single source of truth for the URL-scan browser-resolution sanity, GitHub Pages edition. Consumed by generate.py (emits the static site) AND by URLBrowserResolutionSanity.java (knows each page's mail link + expected resolved URLs). Deterministic cases carry an absolute <base href> so the resolved URL is independent of the deploy domain. The meta-refresh case has no base, so it resolves against the serving URL and uses {BASE} (which the test replaces with the deployed site origin, incl. the /<repo> path on GitHub Pages). 'mailPath' = the path the test mail links to (backend fetches this). 'page.html' = inner-body HTML the generator wraps in <html><body>..</body></html>. NOTE: Refresh-response-header and real-30x-redirect cases are intentionally omitted - GitHub Pages cannot set response headers or emit a real 30x; add them back only if hosting moves to Netlify/Cloudflare.",
+
+  "cases": [
+    {
+      "id": "all_formats",
+      "desc": "Every relative shape on ONE page against a single <base href> (the headline case).",
+      "mailPath": "all-formats.html",
+      "page": {
+        "path": "all-formats.html",
+        "html": "<base href=\"https://example.com/a/b/\"><a href=\"https://other.com/abs\">absolute-own-scheme</a><a href=\"//cdn.example.com/p.png\">protocol-relative</a><a href=\"/login\">root-relative</a><a href=\"c/d\">path-relative</a><a href=\"../up\">dot-dot</a><a href=\"?q=1\">query-only</a><a href=\"#frag\">fragment-only</a>"
+      },
+      "expected": [
+        "https://other.com/abs",
+        "https://cdn.example.com/p.png",
+        "https://example.com/login",
+        "https://example.com/a/b/c/d",
+        "https://example.com/a/up",
+        "https://example.com/a/b/?q=1",
+        "https://example.com/a/b/#frag"
+      ]
+    },
+    {
+      "id": "base_no_trailing",
+      "desc": "Path-relative against a no-trailing-slash multi-segment base: only the last segment is trimmed.",
+      "mailPath": "base-no-trailing.html",
+      "page": {
+        "path": "base-no-trailing.html",
+        "html": "<base href=\"https://drive.google.com/a/b/c/d/ergvetr\"><a href=\"file/d/asj/view?usp=sharing\">link</a>"
+      },
+      "expected": [ "https://drive.google.com/a/b/c/d/file/d/asj/view?usp=sharing" ]
+    },
+    {
+      "id": "root_relative",
+      "desc": "Root-relative ('/...') discards the ENTIRE base path.",
+      "mailPath": "root-relative.html",
+      "page": {
+        "path": "root-relative.html",
+        "html": "<base href=\"https://drive.google.com/a/b/c/d/ergvetr\"><a href=\"/file/d/asj/view?usp=sharing\">link</a>"
+      },
+      "expected": [ "https://drive.google.com/file/d/asj/view?usp=sharing" ]
+    },
+    {
+      "id": "base_directory",
+      "desc": "Trailing-slash directory base: nothing trimmed, ref simply appended.",
+      "mailPath": "base-directory.html",
+      "page": {
+        "path": "base-directory.html",
+        "html": "<base href=\"https://drive.google.com/a/b/c/d/\"><a href=\"file/d/asj/view?usp=sharing\">link</a>"
+      },
+      "expected": [ "https://drive.google.com/a/b/c/d/file/d/asj/view?usp=sharing" ]
+    },
+    {
+      "id": "dotdot",
+      "desc": "../ traversal (single and double) after the last base segment is trimmed.",
+      "mailPath": "dotdot.html",
+      "page": {
+        "path": "dotdot.html",
+        "html": "<base href=\"https://drive.google.com/a/b/c/d/ergvetr\"><a href=\"../x\">one</a><a href=\"../../y\">two</a>"
+      },
+      "expected": [
+        "https://drive.google.com/a/b/c/x",
+        "https://drive.google.com/a/b/y"
+      ]
+    },
+    {
+      "id": "proto_relative_anchor",
+      "desc": "Protocol-relative anchor inherits the base's scheme.",
+      "mailPath": "proto-relative-anchor.html",
+      "page": {
+        "path": "proto-relative-anchor.html",
+        "html": "<base href=\"https://drive.google.com/ergvetr\"><a href=\"//example.com/page?x=1\">link</a>"
+      },
+      "expected": [ "https://example.com/page?x=1" ]
+    },
+    {
+      "id": "absolute_override",
+      "desc": "Anchor carrying its own scheme overrides the base entirely.",
+      "mailPath": "absolute-override.html",
+      "page": {
+        "path": "absolute-override.html",
+        "html": "<base href=\"https://example.com/dir/\"><a href=\"ftp://external.com/file.txt\">link</a>"
+      },
+      "expected": [ "ftp://external.com/file.txt" ]
+    },
+    {
+      "id": "backslash_base",
+      "desc": "Backslash-terminated base: WHATWG normalizes '\\\\' to '/' for special schemes.",
+      "mailPath": "backslash-base.html",
+      "page": {
+        "path": "backslash-base.html",
+        "html": "<base href=\"https://drive.google.com/ergvetr\\\"><a href=\"file/d/asj/view?usp=sharing\">link</a>"
+      },
+      "expected": [ "https://drive.google.com/ergvetr/file/d/asj/view?usp=sharing" ]
+    },
+    {
+      "id": "multiple_base",
+      "desc": "Multiple <base> tags: the FIRST valid one wins (HTML spec).",
+      "mailPath": "multiple-base.html",
+      "page": {
+        "path": "multiple-base.html",
+        "html": "<base href=\"https://first-base.com/dir/\"><base href=\"https://second-base.com/other/\"><a href=\"page\">link</a>"
+      },
+      "expected": [ "https://first-base.com/dir/page" ]
+    },
+    {
+      "id": "idn_base",
+      "desc": "IDN / punycode base + path-relative anchor.",
+      "mailPath": "idn-base.html",
+      "page": {
+        "path": "idn-base.html",
+        "html": "<base href=\"https://xn--mnchen-3ya.de/reports\"><a href=\"summary/q1?lang=de\">link</a>"
+      },
+      "expected": [ "https://xn--mnchen-3ya.de/summary/q1?lang=de" ]
+    },
+    {
+      "id": "ip_port_base",
+      "desc": "IP + explicit port base is preserved through resolution.",
+      "mailPath": "ip-port-base.html",
+      "page": {
+        "path": "ip-port-base.html",
+        "html": "<base href=\"https://192.168.1.1:8443/admin\"><a href=\"users/list?active=true\">link</a>"
+      },
+      "expected": [ "https://192.168.1.1:8443/users/list?active=true" ]
+    },
+    {
+      "id": "query_fragment_base",
+      "desc": "Query/fragment carried by base is dropped when the relative ref supplies a new path+query.",
+      "mailPath": "query-fragment-base.html",
+      "page": {
+        "path": "query-fragment-base.html",
+        "html": "<base href=\"https://example.com/app?theme=dark#top\"><a href=\"settings?tab=profile\">link</a>"
+      },
+      "expected": [ "https://example.com/settings?tab=profile" ]
+    },
+    {
+      "id": "encoding_base",
+      "desc": "Percent-encoding preserved verbatim through base-relative resolution.",
+      "mailPath": "encoding-base.html",
+      "page": {
+        "path": "encoding-base.html",
+        "html": "<base href=\"https://example.com/caf%C3%A9/\"><a href=\"menu%20item\">link</a>"
+      },
+      "expected": [ "https://example.com/caf%C3%A9/menu%20item" ]
+    },
+    {
+      "id": "non_anchor_tags",
+      "desc": "img/form/iframe src|action resolve the same way as <a href> (reveals whether backend extracts these too).",
+      "mailPath": "non-anchor-tags.html",
+      "page": {
+        "path": "non-anchor-tags.html",
+        "html": "<base href=\"https://example.com/base/\"><img src=\"logo.png\"><form action=\"login\"></form><iframe src=\"embed/frame\"></iframe>"
+      },
+      "expected": [
+        "https://example.com/base/logo.png",
+        "https://example.com/base/login",
+        "https://example.com/base/embed/frame"
+      ]
+    },
+
+    {
+      "id": "meta_refresh_relative",
+      "desc": "Meta-refresh with a path-relative target and NO base -> resolves against the serving URL. No anchor fallback, so the expected URL can only come from meta-refresh parsing (isolates that path). Serving-path-dependent, hence {BASE}.",
+      "mailPath": "m/promo.html",
+      "page": {
+        "path": "m/promo.html",
+        "html": "<meta http-equiv=\"refresh\" content=\"5;url=next\">"
+      },
+      "expectedTemplate": [ "{BASE}/m/next" ]
+    }
+  ]
+}
