@@ -1,16 +1,15 @@
 {
-  "_readme": "Single source of truth for the URL-scan browser-resolution sanity, GitHub Pages edition. Consumed by generate.py (emits the static site) AND by URLBrowserResolutionSanity.java (knows each page's mail link + expected resolved URLs). Deterministic cases carry an absolute <base href> so the resolved URL is independent of the deploy domain. The meta-refresh case has no base, so it resolves against the serving URL and uses {BASE} (which the test replaces with the deployed site origin, incl. the /<repo> path on GitHub Pages). 'mailPath' = the path the test mail links to (backend fetches this). 'page.html' = inner-body HTML the generator wraps in <html><body>..</body></html>. NOTE: Refresh-response-header and real-30x-redirect cases are intentionally omitted - GitHub Pages cannot set response headers or emit a real 30x; add them back only if hosting moves to Netlify/Cloudflare.",
-
+  "_readme": "Webpage URL-extraction sanity cases (GitHub Pages). Built by build_cases.py from webpage_url_extraction_test_cases(1).md + base-href resolution cases. Per case: 'present' = absolute URLs that must appear in the antispam-log urlList; 'presentTemplate' = same with {BASE} (full deploy base incl. /repo) / {ORIGIN} (scheme+host only) placeholders; 'absent' = must NOT appear; 'info'=true -> log only. generate.py wraps page.html into a static page under the given path.",
   "cases": [
     {
       "id": "all_formats",
-      "desc": "Every relative shape on ONE page against a single <base href> (the headline case).",
-      "mailPath": "all-formats.html",
+      "desc": "Every relative shape against one <base href>.",
+      "mailPath": "pages/all_formats.html",
       "page": {
-        "path": "all-formats.html",
-        "html": "<base href=\"https://example.com/a/b/\"><a href=\"https://other.com/abs\">absolute-own-scheme</a><a href=\"//cdn.example.com/p.png\">protocol-relative</a><a href=\"/login\">root-relative</a><a href=\"c/d\">path-relative</a><a href=\"../up\">dot-dot</a><a href=\"?q=1\">query-only</a><a href=\"#frag\">fragment-only</a>"
+        "path": "pages/all_formats.html",
+        "html": "<base href=\"https://example.com/a/b/\"><a href=\"https://other.com/abs\">absolute</a><a href=\"//cdn.example.com/p.png\">prel</a><a href=\"/login\">root</a><a href=\"c/d\">path</a><a href=\"../up\">dotdot</a><a href=\"?q=1\">query</a><a href=\"#frag\">frag</a>"
       },
-      "expected": [
+      "present": [
         "https://other.com/abs",
         "https://cdn.example.com/p.png",
         "https://example.com/login",
@@ -18,155 +17,1888 @@
         "https://example.com/a/up",
         "https://example.com/a/b/?q=1",
         "https://example.com/a/b/#frag"
-      ]
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
     },
     {
       "id": "base_no_trailing",
-      "desc": "Path-relative against a no-trailing-slash multi-segment base: only the last segment is trimmed.",
-      "mailPath": "base-no-trailing.html",
+      "desc": "Path-relative vs no-trailing-slash base (last segment trimmed).",
+      "mailPath": "pages/base_no_trailing.html",
       "page": {
-        "path": "base-no-trailing.html",
-        "html": "<base href=\"https://drive.google.com/a/b/c/d/ergvetr\"><a href=\"file/d/asj/view?usp=sharing\">link</a>"
+        "path": "pages/base_no_trailing.html",
+        "html": "<base href=\"https://drive.google.com/a/b/c/d/ergvetr\"><a href=\"file/d/asj/view?usp=sharing\">l</a>"
       },
-      "expected": [ "https://drive.google.com/a/b/c/d/file/d/asj/view?usp=sharing" ]
+      "present": [
+        "https://drive.google.com/a/b/c/d/file/d/asj/view?usp=sharing"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
     },
     {
-      "id": "root_relative",
-      "desc": "Root-relative ('/...') discards the ENTIRE base path.",
-      "mailPath": "root-relative.html",
+      "id": "root_relative_base",
+      "desc": "Root-relative discards entire base path.",
+      "mailPath": "pages/root_relative_base.html",
       "page": {
-        "path": "root-relative.html",
-        "html": "<base href=\"https://drive.google.com/a/b/c/d/ergvetr\"><a href=\"/file/d/asj/view?usp=sharing\">link</a>"
+        "path": "pages/root_relative_base.html",
+        "html": "<base href=\"https://drive.google.com/a/b/c/d/ergvetr\"><a href=\"/file/d/asj/view?usp=sharing\">l</a>"
       },
-      "expected": [ "https://drive.google.com/file/d/asj/view?usp=sharing" ]
+      "present": [
+        "https://drive.google.com/file/d/asj/view?usp=sharing"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
     },
     {
       "id": "base_directory",
-      "desc": "Trailing-slash directory base: nothing trimmed, ref simply appended.",
-      "mailPath": "base-directory.html",
+      "desc": "Directory base: nothing trimmed.",
+      "mailPath": "pages/base_directory.html",
       "page": {
-        "path": "base-directory.html",
-        "html": "<base href=\"https://drive.google.com/a/b/c/d/\"><a href=\"file/d/asj/view?usp=sharing\">link</a>"
+        "path": "pages/base_directory.html",
+        "html": "<base href=\"https://drive.google.com/a/b/c/d/\"><a href=\"file/d/asj/view?usp=sharing\">l</a>"
       },
-      "expected": [ "https://drive.google.com/a/b/c/d/file/d/asj/view?usp=sharing" ]
+      "present": [
+        "https://drive.google.com/a/b/c/d/file/d/asj/view?usp=sharing"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
     },
     {
       "id": "dotdot",
-      "desc": "../ traversal (single and double) after the last base segment is trimmed.",
-      "mailPath": "dotdot.html",
+      "desc": "../ traversal.",
+      "mailPath": "pages/dotdot.html",
       "page": {
-        "path": "dotdot.html",
-        "html": "<base href=\"https://drive.google.com/a/b/c/d/ergvetr\"><a href=\"../x\">one</a><a href=\"../../y\">two</a>"
+        "path": "pages/dotdot.html",
+        "html": "<base href=\"https://drive.google.com/a/b/c/d/ergvetr\"><a href=\"../x\">1</a><a href=\"../../y\">2</a>"
       },
-      "expected": [
+      "present": [
         "https://drive.google.com/a/b/c/x",
         "https://drive.google.com/a/b/y"
-      ]
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
     },
     {
       "id": "proto_relative_anchor",
-      "desc": "Protocol-relative anchor inherits the base's scheme.",
-      "mailPath": "proto-relative-anchor.html",
+      "desc": "Protocol-relative anchor inherits base scheme.",
+      "mailPath": "pages/proto_relative_anchor.html",
       "page": {
-        "path": "proto-relative-anchor.html",
-        "html": "<base href=\"https://drive.google.com/ergvetr\"><a href=\"//example.com/page?x=1\">link</a>"
+        "path": "pages/proto_relative_anchor.html",
+        "html": "<base href=\"https://drive.google.com/ergvetr\"><a href=\"//example.com/page?x=1\">l</a>"
       },
-      "expected": [ "https://example.com/page?x=1" ]
+      "present": [
+        "https://example.com/page?x=1"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
     },
     {
       "id": "absolute_override",
-      "desc": "Anchor carrying its own scheme overrides the base entirely.",
-      "mailPath": "absolute-override.html",
+      "desc": "Anchor with own scheme overrides base.",
+      "mailPath": "pages/absolute_override.html",
       "page": {
-        "path": "absolute-override.html",
-        "html": "<base href=\"https://example.com/dir/\"><a href=\"ftp://external.com/file.txt\">link</a>"
+        "path": "pages/absolute_override.html",
+        "html": "<base href=\"https://example.com/dir/\"><a href=\"ftp://external.com/file.txt\">l</a>"
       },
-      "expected": [ "ftp://external.com/file.txt" ]
+      "present": [
+        "ftp://external.com/file.txt"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
     },
     {
       "id": "backslash_base",
-      "desc": "Backslash-terminated base: WHATWG normalizes '\\\\' to '/' for special schemes.",
-      "mailPath": "backslash-base.html",
+      "desc": "Backslash-terminated base normalized to /.",
+      "mailPath": "pages/backslash_base.html",
       "page": {
-        "path": "backslash-base.html",
-        "html": "<base href=\"https://drive.google.com/ergvetr\\\"><a href=\"file/d/asj/view?usp=sharing\">link</a>"
+        "path": "pages/backslash_base.html",
+        "html": "<base href=\"https://drive.google.com/ergvetr\\\"><a href=\"file/d/asj/view?usp=sharing\">l</a>"
       },
-      "expected": [ "https://drive.google.com/ergvetr/file/d/asj/view?usp=sharing" ]
+      "present": [
+        "https://drive.google.com/ergvetr/file/d/asj/view?usp=sharing"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
     },
     {
       "id": "multiple_base",
-      "desc": "Multiple <base> tags: the FIRST valid one wins (HTML spec).",
-      "mailPath": "multiple-base.html",
+      "desc": "First <base> wins.",
+      "mailPath": "pages/multiple_base.html",
       "page": {
-        "path": "multiple-base.html",
-        "html": "<base href=\"https://first-base.com/dir/\"><base href=\"https://second-base.com/other/\"><a href=\"page\">link</a>"
+        "path": "pages/multiple_base.html",
+        "html": "<base href=\"https://first-base.com/dir/\"><base href=\"https://second-base.com/other/\"><a href=\"page\">l</a>"
       },
-      "expected": [ "https://first-base.com/dir/page" ]
+      "present": [
+        "https://first-base.com/dir/page"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
     },
     {
       "id": "idn_base",
-      "desc": "IDN / punycode base + path-relative anchor.",
-      "mailPath": "idn-base.html",
+      "desc": "IDN/punycode base.",
+      "mailPath": "pages/idn_base.html",
       "page": {
-        "path": "idn-base.html",
-        "html": "<base href=\"https://xn--mnchen-3ya.de/reports\"><a href=\"summary/q1?lang=de\">link</a>"
+        "path": "pages/idn_base.html",
+        "html": "<base href=\"https://xn--mnchen-3ya.de/reports\"><a href=\"summary/q1?lang=de\">l</a>"
       },
-      "expected": [ "https://xn--mnchen-3ya.de/summary/q1?lang=de" ]
+      "present": [
+        "https://xn--mnchen-3ya.de/summary/q1?lang=de"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
     },
     {
       "id": "ip_port_base",
-      "desc": "IP + explicit port base is preserved through resolution.",
-      "mailPath": "ip-port-base.html",
+      "desc": "IP+port base preserved.",
+      "mailPath": "pages/ip_port_base.html",
       "page": {
-        "path": "ip-port-base.html",
-        "html": "<base href=\"https://192.168.1.1:8443/admin\"><a href=\"users/list?active=true\">link</a>"
+        "path": "pages/ip_port_base.html",
+        "html": "<base href=\"https://192.168.1.1:8443/admin\"><a href=\"users/list?active=true\">l</a>"
       },
-      "expected": [ "https://192.168.1.1:8443/users/list?active=true" ]
+      "present": [
+        "https://192.168.1.1:8443/users/list?active=true"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
     },
     {
       "id": "query_fragment_base",
-      "desc": "Query/fragment carried by base is dropped when the relative ref supplies a new path+query.",
-      "mailPath": "query-fragment-base.html",
+      "desc": "Base query dropped for new path.",
+      "mailPath": "pages/query_fragment_base.html",
       "page": {
-        "path": "query-fragment-base.html",
-        "html": "<base href=\"https://example.com/app?theme=dark#top\"><a href=\"settings?tab=profile\">link</a>"
+        "path": "pages/query_fragment_base.html",
+        "html": "<base href=\"https://example.com/app?theme=dark#top\"><a href=\"settings?tab=profile\">l</a>"
       },
-      "expected": [ "https://example.com/settings?tab=profile" ]
+      "present": [
+        "https://example.com/settings?tab=profile"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
     },
     {
       "id": "encoding_base",
-      "desc": "Percent-encoding preserved verbatim through base-relative resolution.",
-      "mailPath": "encoding-base.html",
+      "desc": "Percent-encoding preserved.",
+      "mailPath": "pages/encoding_base.html",
       "page": {
-        "path": "encoding-base.html",
-        "html": "<base href=\"https://example.com/caf%C3%A9/\"><a href=\"menu%20item\">link</a>"
+        "path": "pages/encoding_base.html",
+        "html": "<base href=\"https://example.com/caf%C3%A9/\"><a href=\"menu%20item\">l</a>"
       },
-      "expected": [ "https://example.com/caf%C3%A9/menu%20item" ]
+      "present": [
+        "https://example.com/caf%C3%A9/menu%20item"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
     },
     {
-      "id": "non_anchor_tags",
-      "desc": "img/form/iframe src|action resolve the same way as <a href> (reveals whether backend extracts these too).",
-      "mailPath": "non-anchor-tags.html",
+      "id": "non_anchor_base",
+      "desc": "img/form/iframe resolved like <a>.",
+      "mailPath": "pages/non_anchor_base.html",
       "page": {
-        "path": "non-anchor-tags.html",
+        "path": "pages/non_anchor_base.html",
         "html": "<base href=\"https://example.com/base/\"><img src=\"logo.png\"><form action=\"login\"></form><iframe src=\"embed/frame\"></iframe>"
       },
-      "expected": [
+      "present": [
         "https://example.com/base/logo.png",
         "https://example.com/base/login",
         "https://example.com/base/embed/frame"
-      ]
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
     },
-
     {
       "id": "meta_refresh_relative",
-      "desc": "Meta-refresh with a path-relative target and NO base -> resolves against the serving URL. No anchor fallback, so the expected URL can only come from meta-refresh parsing (isolates that path). Serving-path-dependent, hence {BASE}.",
-      "mailPath": "m/promo.html",
+      "desc": "Meta-refresh path-relative vs serving URL.",
+      "mailPath": "pages/meta_refresh_relative.html",
       "page": {
-        "path": "m/promo.html",
+        "path": "pages/meta_refresh_relative.html",
         "html": "<meta http-equiv=\"refresh\" content=\"5;url=next\">"
       },
-      "expectedTemplate": [ "{BASE}/m/next" ]
+      "present": [],
+      "presentTemplate": [
+        "{BASE}/pages/next"
+      ],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_br_notrailing",
+      "desc": "single-seg no-trailing base + path-rel",
+      "mailPath": "pages/ds_br_notrailing.html",
+      "page": {
+        "path": "pages/ds_br_notrailing.html",
+        "html": "<base href=\"https://drive.google.com/ergvetr\" target=\"_blank\"><br><br><a href=\"file/d/asj/view?usp=sharing\">link1</a>"
+      },
+      "present": [
+        "https://drive.google.com/file/d/asj/view?usp=sharing"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_br_root",
+      "desc": "single-seg base + root-rel",
+      "mailPath": "pages/ds_br_root.html",
+      "page": {
+        "path": "pages/ds_br_root.html",
+        "html": "<base href=\"https://drive.google.com/ergvetr\" target=\"_blank\"><br><br><a href=\"/file/d/asj/view?usp=sharing\">link1</a>"
+      },
+      "present": [
+        "https://drive.google.com/file/d/asj/view?usp=sharing"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_br_folder_trailing",
+      "desc": "trailing-slash base + path-rel",
+      "mailPath": "pages/ds_br_folder_trailing.html",
+      "page": {
+        "path": "pages/ds_br_folder_trailing.html",
+        "html": "<base href=\"https://drive.google.com/folder/\" target=\"_blank\"><br><br><a href=\"file/d/asj/view?usp=sharing\">link1</a>"
+      },
+      "present": [
+        "https://drive.google.com/folder/file/d/asj/view?usp=sharing"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_br_ab_dotdot",
+      "desc": "a/b/ + ../c",
+      "mailPath": "pages/ds_br_ab_dotdot.html",
+      "page": {
+        "path": "pages/ds_br_ab_dotdot.html",
+        "html": "<base href=\"https://drive.google.com/a/b/\" target=\"_blank\"><br><br><a href=\"../c/view?usp=sharing\">link1</a>"
+      },
+      "present": [
+        "https://drive.google.com/a/c/view?usp=sharing"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_br_nobase",
+      "desc": "no base + path-rel (undefined)",
+      "mailPath": "pages/ds_br_nobase.html",
+      "page": {
+        "path": "pages/ds_br_nobase.html",
+        "html": "<a href=\"file/d/asj/view?usp=sharing\">link1</a>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "ds_bs_root",
+      "desc": "backslash base + root-rel",
+      "mailPath": "pages/ds_bs_root.html",
+      "page": {
+        "path": "pages/ds_bs_root.html",
+        "html": "<base href=\"https://drive.google.com/ergvetr\\\" target=\"_blank\"><br><br><a href=\"/file/d/asj/view?usp=sharing\">link1</a>"
+      },
+      "present": [
+        "https://drive.google.com/file/d/asj/view?usp=sharing"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_bs_host_backslash",
+      "desc": "backslash in place of first path slash (undefined)",
+      "mailPath": "pages/ds_bs_host_backslash.html",
+      "page": {
+        "path": "pages/ds_bs_host_backslash.html",
+        "html": "<base href=\"https://drive.google.com\\ergvetr\" target=\"_blank\"><br><br><a href=\"file/d/asj/view?usp=sharing\">link1</a>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "ds_bs_midpath",
+      "desc": "backslash mid-path (undefined)",
+      "mailPath": "pages/ds_bs_midpath.html",
+      "page": {
+        "path": "pages/ds_bs_midpath.html",
+        "html": "<base href=\"https://drive.google.com/a\\b/\" target=\"_blank\"><br><br><a href=\"file/d/asj/view?usp=sharing\">link1</a>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "ds_bs_rel_backslash",
+      "desc": "relative anchor uses backslashes (undefined)",
+      "mailPath": "pages/ds_bs_rel_backslash.html",
+      "page": {
+        "path": "pages/ds_bs_rel_backslash.html",
+        "html": "<base href=\"https://drive.google.com/ergvetr/\" target=\"_blank\"><br><br><a href=\"file\\d\\asj\\view?usp=sharing\">link1</a>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "ds_bs_dotdot",
+      "desc": "backslash + ../ (undefined)",
+      "mailPath": "pages/ds_bs_dotdot.html",
+      "page": {
+        "path": "pages/ds_bs_dotdot.html",
+        "html": "<base href=\"https://drive.google.com/folder/\" target=\"_blank\"><br><br><a href=\"..\\c\\view?usp=sharing\">link1</a>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "ds_mal_base_unquoted",
+      "desc": "unterminated base href quote (undefined)",
+      "mailPath": "pages/ds_mal_base_unquoted.html",
+      "page": {
+        "path": "pages/ds_mal_base_unquoted.html",
+        "html": "<base href=\"https://drive.google.com/ergvetr target=\" target=\"_blank\"><br><br><a href=\"file/d/asj/view?usp=sharing\">link1</a>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "ds_mal_broken_quote",
+      "desc": "unterminated anchor href quote (undefined)",
+      "mailPath": "pages/ds_mal_broken_quote.html",
+      "page": {
+        "path": "pages/ds_mal_broken_quote.html",
+        "html": "<a href=\"https://example.com/broken-quote?a=1>link</a>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "ds_mal_amp_raw",
+      "desc": "raw & in href",
+      "mailPath": "pages/ds_mal_amp_raw.html",
+      "page": {
+        "path": "pages/ds_mal_amp_raw.html",
+        "html": "<a href=\"https://example.com/page?a=1&b=2\">link</a>"
+      },
+      "present": [
+        "https://example.com/page?a=1&b=2"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_mal_single_quoted",
+      "desc": "single-quoted href",
+      "mailPath": "pages/ds_mal_single_quoted.html",
+      "page": {
+        "path": "pages/ds_mal_single_quoted.html",
+        "html": "<a href='https://example.com/single-quoted-href'>link</a>"
+      },
+      "present": [
+        "https://example.com/single-quoted-href"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_mal_attr_glue",
+      "desc": "attr glued to href close-quote",
+      "mailPath": "pages/ds_mal_attr_glue.html",
+      "page": {
+        "path": "pages/ds_mal_attr_glue.html",
+        "html": "<a href=\"https://example.com/attr-glue\"target=\"_blank\">link</a>"
+      },
+      "present": [
+        "https://example.com/attr-glue"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_np_base_protorel",
+      "desc": "protocol-relative base + path-rel",
+      "mailPath": "pages/ds_np_base_protorel.html",
+      "page": {
+        "path": "pages/ds_np_base_protorel.html",
+        "html": "<base href=\"//drive.google.com/ergvetr\" target=\"_blank\"><br><br><a href=\"file/d/asj/view?usp=sharing\">link1</a>"
+      },
+      "present": [
+        "https://drive.google.com/file/d/asj/view?usp=sharing"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_np_anchor_protorel_nobase",
+      "desc": "no base + protocol-relative anchor",
+      "mailPath": "pages/ds_np_anchor_protorel_nobase.html",
+      "page": {
+        "path": "pages/ds_np_anchor_protorel_nobase.html",
+        "html": "<a href=\"//example.com/page?x=1\">link1</a>"
+      },
+      "present": [
+        "https://example.com/page?x=1"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_np_base_plus_protorel",
+      "desc": "base + protocol-relative anchor overrides host",
+      "mailPath": "pages/ds_np_base_plus_protorel.html",
+      "page": {
+        "path": "pages/ds_np_base_plus_protorel.html",
+        "html": "<base href=\"https://drive.google.com/ergvetr\" target=\"_blank\"><br><br><a href=\"//example.com/page?x=1\">link1</a>"
+      },
+      "present": [
+        "https://example.com/page?x=1"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_np_base_schemeless",
+      "desc": "scheme-less base (undefined)",
+      "mailPath": "pages/ds_np_base_schemeless.html",
+      "page": {
+        "path": "pages/ds_np_base_schemeless.html",
+        "html": "<base href=\"drive.google.com/folder/\" target=\"_blank\"><br><br><a href=\"file/d/asj/view?usp=sharing\">link1</a>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "ds_np_anchor_schemeless_nobase",
+      "desc": "no base + scheme-less anchor (undefined)",
+      "mailPath": "pages/ds_np_anchor_schemeless_nobase.html",
+      "page": {
+        "path": "pages/ds_np_anchor_schemeless_nobase.html",
+        "html": "<a href=\"drive.google.com/file/d/asj?usp=sharing\">link1</a>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "ds_idn_notrailing",
+      "desc": "punycode base no-trailing + path-rel",
+      "mailPath": "pages/ds_idn_notrailing.html",
+      "page": {
+        "path": "pages/ds_idn_notrailing.html",
+        "html": "<base href=\"https://xn--mnchen-3ya.de/reports\" target=\"_blank\"><br><br><a href=\"summary/q1?lang=de\">link1</a>"
+      },
+      "present": [
+        "https://xn--mnchen-3ya.de/summary/q1?lang=de"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_idn_fsqu_dotdot",
+      "desc": "punycode base + ../",
+      "mailPath": "pages/ds_idn_fsqu_dotdot.html",
+      "page": {
+        "path": "pages/ds_idn_fsqu_dotdot.html",
+        "html": "<base href=\"https://xn--fsqu00a.xn--0zwm56d/reports/\" target=\"_blank\"><br><br><a href=\"../data/x\">link1</a>"
+      },
+      "present": [
+        "https://xn--fsqu00a.xn--0zwm56d/data/x"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_idn_unicode_base",
+      "desc": "unicode base (representation undefined)",
+      "mailPath": "pages/ds_idn_unicode_base.html",
+      "page": {
+        "path": "pages/ds_idn_unicode_base.html",
+        "html": "<base href=\"https://münchen.de/reports\" target=\"_blank\"><br><br><a href=\"summary/q1\">link1</a>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "ds_idn_mgbh",
+      "desc": "punycode base + trailing slash",
+      "mailPath": "pages/ds_idn_mgbh.html",
+      "page": {
+        "path": "pages/ds_idn_mgbh.html",
+        "html": "<base href=\"https://xn--mgbh0fb.xn--kgbechtv/dir/\" target=\"_blank\"><br><br><a href=\"page\">link1</a>"
+      },
+      "present": [
+        "https://xn--mgbh0fb.xn--kgbechtv/dir/page"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_ip_v4port",
+      "desc": "IPv4:port base",
+      "mailPath": "pages/ds_ip_v4port.html",
+      "page": {
+        "path": "pages/ds_ip_v4port.html",
+        "html": "<base href=\"https://192.168.1.1:8443/admin\" target=\"_blank\"><br><br><a href=\"users/list?active=true\">link1</a>"
+      },
+      "present": [
+        "https://192.168.1.1:8443/users/list?active=true"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_ip_v6port",
+      "desc": "IPv6:port base",
+      "mailPath": "pages/ds_ip_v6port.html",
+      "page": {
+        "path": "pages/ds_ip_v6port.html",
+        "html": "<base href=\"https://[2001:db8::1]:8080/api/\" target=\"_blank\"><br><br><a href=\"v2/status\">link1</a>"
+      },
+      "present": [
+        "https://[2001:db8::1]:8080/api/v2/status"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_ip_v6noport",
+      "desc": "IPv6 base no port",
+      "mailPath": "pages/ds_ip_v6noport.html",
+      "page": {
+        "path": "pages/ds_ip_v6noport.html",
+        "html": "<base href=\"https://[2001:db8::1]/api/\" target=\"_blank\"><br><br><a href=\"v2/status\">link1</a>"
+      },
+      "present": [
+        "https://[2001:db8::1]/api/v2/status"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_ip_65535",
+      "desc": "max-port base",
+      "mailPath": "pages/ds_ip_65535.html",
+      "page": {
+        "path": "pages/ds_ip_65535.html",
+        "html": "<base href=\"https://example.com:65535/root/\" target=\"_blank\"><br><br><a href=\"nested/page\">link1</a>"
+      },
+      "present": [
+        "https://example.com:65535/root/nested/page"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_auth_userpass",
+      "desc": "user:pass@ base",
+      "mailPath": "pages/ds_auth_userpass.html",
+      "page": {
+        "path": "pages/ds_auth_userpass.html",
+        "html": "<base href=\"https://user:pass@example.com/secure/\" target=\"_blank\"><br><br><a href=\"dashboard?tab=1\">link1</a>"
+      },
+      "present": [
+        "https://user:pass@example.com/secure/dashboard?tab=1"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_auth_user",
+      "desc": "user@ base",
+      "mailPath": "pages/ds_auth_user.html",
+      "page": {
+        "path": "pages/ds_auth_user.html",
+        "html": "<base href=\"https://svc@example.com/\" target=\"_blank\"><br><br><a href=\"path/to/x\">link1</a>"
+      },
+      "present": [
+        "https://svc@example.com/path/to/x"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_auth_at_relative",
+      "desc": "@ in relative segment (undefined)",
+      "mailPath": "pages/ds_auth_at_relative.html",
+      "page": {
+        "path": "pages/ds_auth_at_relative.html",
+        "html": "<base href=\"https://user:pass@example.com/secure/\" target=\"_blank\"><br><br><a href=\"account@notrelative\">link1</a>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "ds_qf_newanchor",
+      "desc": "fragment-only vs base with fragment",
+      "mailPath": "pages/ds_qf_newanchor.html",
+      "page": {
+        "path": "pages/ds_qf_newanchor.html",
+        "html": "<base href=\"https://example.com/app/section#anchor\" target=\"_blank\"><br><br><a href=\"#newanchor\">link1</a>"
+      },
+      "present": [
+        "https://example.com/app/section#newanchor"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_qf_page_space_encoded",
+      "desc": "encoded space in fragment",
+      "mailPath": "pages/ds_qf_page_space_encoded.html",
+      "page": {
+        "path": "pages/ds_qf_page_space_encoded.html",
+        "html": "<base href=\"https://example.com/app/\" target=\"_blank\"><br><br><a href=\"page#section%20with%20space\">link1</a>"
+      },
+      "present": [
+        "https://example.com/app/page#section%20with%20space"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_qf_space_raw",
+      "desc": "raw space in fragment (undefined)",
+      "mailPath": "pages/ds_qf_space_raw.html",
+      "page": {
+        "path": "pages/ds_qf_space_raw.html",
+        "html": "<base href=\"https://example.com/app/section#anchor\" target=\"_blank\"><br><br><a href=\"#new anchor\">link1</a>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "ds_enc_slashes",
+      "desc": "encoded slashes preserved",
+      "mailPath": "pages/ds_enc_slashes.html",
+      "page": {
+        "path": "pages/ds_enc_slashes.html",
+        "html": "<base href=\"https://example.com/base/\" target=\"_blank\"><br><br><a href=\"path%2Fwith%2Fslashes\">link1</a>"
+      },
+      "present": [
+        "https://example.com/base/path%2Fwith%2Fslashes"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_enc_cafe_rel",
+      "desc": "encoded utf8 in ref",
+      "mailPath": "pages/ds_enc_cafe_rel.html",
+      "page": {
+        "path": "pages/ds_enc_cafe_rel.html",
+        "html": "<base href=\"https://example.com/base/\" target=\"_blank\"><br><br><a href=\"caf%C3%A9\">link1</a>"
+      },
+      "present": [
+        "https://example.com/base/caf%C3%A9"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_abs_ftp",
+      "desc": "ftp anchor overrides base",
+      "mailPath": "pages/ds_abs_ftp.html",
+      "page": {
+        "path": "pages/ds_abs_ftp.html",
+        "html": "<base href=\"https://example.com/dir/\" target=\"_blank\"><br><br><a href=\"ftp://external.com/file.txt\">link1</a>"
+      },
+      "present": [
+        "ftp://external.com/file.txt"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_abs_mailto",
+      "desc": "mailto anchor (extraction undefined)",
+      "mailPath": "pages/ds_abs_mailto.html",
+      "page": {
+        "path": "pages/ds_abs_mailto.html",
+        "html": "<base href=\"https://example.com/dir/\" target=\"_blank\"><br><br><a href=\"mailto:user@example.com\">link1</a>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "ds_mb_first_wins",
+      "desc": "first valid <base> wins",
+      "mailPath": "pages/ds_mb_first_wins.html",
+      "page": {
+        "path": "pages/ds_mb_first_wins.html",
+        "html": "<base href=\"https://first-base.com/dir/\" target=\"_blank\"><base href=\"https://second-base.com/other/\" target=\"_blank\"><br><br><a href=\"page\">link1</a>"
+      },
+      "present": [
+        "https://first-base.com/dir/page"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_mb_late",
+      "desc": "<base> after the anchor (undefined)",
+      "mailPath": "pages/ds_mb_late.html",
+      "page": {
+        "path": "pages/ds_mb_late.html",
+        "html": "<br><br><a href=\"page\">link1</a><base href=\"https://late-base.com/dir/\" target=\"_blank\">"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "ds_tag_unquoted_href",
+      "desc": "unquoted href",
+      "mailPath": "pages/ds_tag_unquoted_href.html",
+      "page": {
+        "path": "pages/ds_tag_unquoted_href.html",
+        "html": "<a href=https://example.com/unquoted-href>link</a>"
+      },
+      "present": [
+        "https://example.com/unquoted-href"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "ds_broken_empty_href",
+      "desc": "empty href (undefined)",
+      "mailPath": "pages/ds_broken_empty_href.html",
+      "page": {
+        "path": "pages/ds_broken_empty_href.html",
+        "html": "<a href=\"\">empty href</a>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "ds_broken_no_value",
+      "desc": "valueless href (undefined)",
+      "mailPath": "pages/ds_broken_no_value.html",
+      "page": {
+        "path": "pages/ds_broken_no_value.html",
+        "html": "<a href>no value at all</a>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "ds_broken_mismatched_quote",
+      "desc": "mismatched quotes (undefined)",
+      "mailPath": "pages/ds_broken_mismatched_quote.html",
+      "page": {
+        "path": "pages/ds_broken_mismatched_quote.html",
+        "html": "<a href='https://example.com/mismatched-quote\">mismatched</a>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc001",
+      "desc": "HTTPS in href",
+      "mailPath": "pages/tc001.html",
+      "page": {
+        "path": "pages/tc001.html",
+        "html": "<a href=\"https://example.com/page\">Example</a>"
+      },
+      "present": [
+        "https://example.com/page"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc002",
+      "desc": "HTTP in href",
+      "mailPath": "pages/tc002.html",
+      "page": {
+        "path": "pages/tc002.html",
+        "html": "<a href=\"http://example.com/page\">Example</a>"
+      },
+      "present": [
+        "http://example.com/page"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc003",
+      "desc": "Visible text differs from href",
+      "mailPath": "pages/tc003.html",
+      "page": {
+        "path": "pages/tc003.html",
+        "html": "<a href=\"https://example.com/actual-page\">Click Here</a>"
+      },
+      "present": [
+        "https://example.com/actual-page"
+      ],
+      "presentTemplate": [],
+      "absent": [
+        "Click Here"
+      ],
+      "info": false
+    },
+    {
+      "id": "tc004",
+      "desc": "Single quotes",
+      "mailPath": "pages/tc004.html",
+      "page": {
+        "path": "pages/tc004.html",
+        "html": "<a href='https://example.com/page'>Example</a>"
+      },
+      "present": [
+        "https://example.com/page"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc005",
+      "desc": "Spaces around href",
+      "mailPath": "pages/tc005.html",
+      "page": {
+        "path": "pages/tc005.html",
+        "html": "<a href = \"https://example.com/page\">Example</a>"
+      },
+      "present": [
+        "https://example.com/page"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc006",
+      "desc": "Multiline anchor",
+      "mailPath": "pages/tc006.html",
+      "page": {
+        "path": "pages/tc006.html",
+        "html": "<a\n  class=\"link\"\n  href=\"https://example.com/page\"\n>\n Example\n</a>"
+      },
+      "present": [
+        "https://example.com/page"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc007",
+      "desc": "HTTPS plain text",
+      "mailPath": "pages/tc007.html",
+      "page": {
+        "path": "pages/tc007.html",
+        "html": "<p>Visit https://example.com/page for more information.</p>"
+      },
+      "present": [
+        "https://example.com/page"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc008",
+      "desc": "HTTP plain text (trailing period)",
+      "mailPath": "pages/tc008.html",
+      "page": {
+        "path": "pages/tc008.html",
+        "html": "<p>Visit http://example.com/page.</p>"
+      },
+      "present": [
+        "http://example.com/page"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc009",
+      "desc": "URL without hyperlink",
+      "mailPath": "pages/tc009.html",
+      "page": {
+        "path": "pages/tc009.html",
+        "html": "<p>Our website is https://example.com</p>"
+      },
+      "present": [
+        "https://example.com"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc010",
+      "desc": "Domain without protocol",
+      "mailPath": "pages/tc010.html",
+      "page": {
+        "path": "pages/tc010.html",
+        "html": "<p>Visit example.com</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc011",
+      "desc": "www without protocol",
+      "mailPath": "pages/tc011.html",
+      "page": {
+        "path": "pages/tc011.html",
+        "html": "<p>Visit www.example.com</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc012",
+      "desc": "Protocol-less with path",
+      "mailPath": "pages/tc012.html",
+      "page": {
+        "path": "pages/tc012.html",
+        "html": "<p>Visit example.com/products/item1</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc013",
+      "desc": "Protocol-less with query",
+      "mailPath": "pages/tc013.html",
+      "page": {
+        "path": "pages/tc013.html",
+        "html": "<p>Visit example.com/search?q=test&amp;sort=desc</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc014",
+      "desc": "Root-relative",
+      "mailPath": "pages/tc014.html",
+      "page": {
+        "path": "pages/tc014.html",
+        "html": "<a href=\"/login\">Login</a>"
+      },
+      "present": [],
+      "presentTemplate": [
+        "{ORIGIN}/login"
+      ],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc015",
+      "desc": "Parent-relative (page under /t/)",
+      "mailPath": "pages/tc015.html",
+      "page": {
+        "path": "pages/tc015.html",
+        "html": "<a href=\"../login\">Login</a>"
+      },
+      "present": [],
+      "presentTemplate": [
+        "{BASE}/login"
+      ],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc016",
+      "desc": "Current-dir relative",
+      "mailPath": "pages/tc016.html",
+      "page": {
+        "path": "pages/tc016.html",
+        "html": "<a href=\"./login\">Login</a>"
+      },
+      "present": [],
+      "presentTemplate": [
+        "{BASE}/pages/login"
+      ],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc017",
+      "desc": "Relative with query",
+      "mailPath": "pages/tc017.html",
+      "page": {
+        "path": "pages/tc017.html",
+        "html": "<a href=\"/search?q=test\">Search</a>"
+      },
+      "present": [],
+      "presentTemplate": [
+        "{ORIGIN}/search?q=test"
+      ],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc018",
+      "desc": "Relative with fragment",
+      "mailPath": "pages/tc018.html",
+      "page": {
+        "path": "pages/tc018.html",
+        "html": "<a href=\"/page#section1\">Section</a>"
+      },
+      "present": [],
+      "presentTemplate": [
+        "{ORIGIN}/page#section1"
+      ],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc019",
+      "desc": "Protocol-relative -> https",
+      "mailPath": "pages/tc019.html",
+      "page": {
+        "path": "pages/tc019.html",
+        "html": "<a href=\"//example.com/page\">Example</a>"
+      },
+      "present": [
+        "https://example.com/page"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc020",
+      "desc": "Unicode domain",
+      "mailPath": "pages/tc020.html",
+      "page": {
+        "path": "pages/tc020.html",
+        "html": "<a href=\"https://münich.com\">Munich</a>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc021",
+      "desc": "Unicode domain+path",
+      "mailPath": "pages/tc021.html",
+      "page": {
+        "path": "pages/tc021.html",
+        "html": "<a href=\"https://münich.com/café\">Cafe</a>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc022",
+      "desc": "Non-Latin IDN",
+      "mailPath": "pages/tc022.html",
+      "page": {
+        "path": "pages/tc022.html",
+        "html": "<a href=\"https://例え.テスト\">Example</a>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc023",
+      "desc": "IDN plain text",
+      "mailPath": "pages/tc023.html",
+      "page": {
+        "path": "pages/tc023.html",
+        "html": "<p>Visit https://münich.com for information.</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc024",
+      "desc": "Multiple IDN",
+      "mailPath": "pages/tc024.html",
+      "page": {
+        "path": "pages/tc024.html",
+        "html": "<p>https://münich.com https://例え.テスト https://δοκιμή.example</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc025",
+      "desc": "Punycode domain",
+      "mailPath": "pages/tc025.html",
+      "page": {
+        "path": "pages/tc025.html",
+        "html": "<a href=\"https://xn--mnich-kva.com\">Munich</a>"
+      },
+      "present": [
+        "https://xn--mnich-kva.com"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc026",
+      "desc": "Punycode plain text",
+      "mailPath": "pages/tc026.html",
+      "page": {
+        "path": "pages/tc026.html",
+        "html": "<p>Visit https://xn--mnich-kva.com</p>"
+      },
+      "present": [
+        "https://xn--mnich-kva.com"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc027",
+      "desc": "Multiple xn-- labels",
+      "mailPath": "pages/tc027.html",
+      "page": {
+        "path": "pages/tc027.html",
+        "html": "<p>https://xn--example-xya.xn--example-9za</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc028",
+      "desc": "Unicode + punycode label",
+      "mailPath": "pages/tc028.html",
+      "page": {
+        "path": "pages/tc028.html",
+        "html": "<a href=\"https://例え.xn--p1ai\">Example</a>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc029",
+      "desc": "Punycode host + unicode path",
+      "mailPath": "pages/tc029.html",
+      "page": {
+        "path": "pages/tc029.html",
+        "html": "<a href=\"https://xn--mnich-kva.com/日本語\">Example</a>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc030",
+      "desc": "Punycode host + unicode query",
+      "mailPath": "pages/tc030.html",
+      "page": {
+        "path": "pages/tc030.html",
+        "html": "<p>https://xn--mnich-kva.com/search?q=தமிழ்</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc031",
+      "desc": "Unicode path",
+      "mailPath": "pages/tc031.html",
+      "page": {
+        "path": "pages/tc031.html",
+        "html": "<p>https://example.com/日本語</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc032",
+      "desc": "Tamil path",
+      "mailPath": "pages/tc032.html",
+      "page": {
+        "path": "pages/tc032.html",
+        "html": "<p>https://example.com/தமிழ்</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc033",
+      "desc": "Unicode query",
+      "mailPath": "pages/tc033.html",
+      "page": {
+        "path": "pages/tc033.html",
+        "html": "<p>https://example.com/search?q=தமிழ்</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc034",
+      "desc": "Percent-encoded unicode",
+      "mailPath": "pages/tc034.html",
+      "page": {
+        "path": "pages/tc034.html",
+        "html": "<p>https://example.com/%E6%97%A5%E6%9C%AC%E8%AA%9E</p>"
+      },
+      "present": [
+        "https://example.com/%E6%97%A5%E6%9C%AC%E8%AA%9E"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc035",
+      "desc": "Single query",
+      "mailPath": "pages/tc035.html",
+      "page": {
+        "path": "pages/tc035.html",
+        "html": "<p>https://example.com/page?id=123</p>"
+      },
+      "present": [
+        "https://example.com/page?id=123"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc036",
+      "desc": "Multiple query params",
+      "mailPath": "pages/tc036.html",
+      "page": {
+        "path": "pages/tc036.html",
+        "html": "<p>https://example.com/search?q=test&amp;sort=desc&amp;page=2</p>"
+      },
+      "present": [
+        "https://example.com/search?q=test&sort=desc&page=2"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc037",
+      "desc": "Encoded chars in query",
+      "mailPath": "pages/tc037.html",
+      "page": {
+        "path": "pages/tc037.html",
+        "html": "<p>https://example.com/search?q=hello%20world</p>"
+      },
+      "present": [
+        "https://example.com/search?q=hello%20world"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc038",
+      "desc": "Fragment",
+      "mailPath": "pages/tc038.html",
+      "page": {
+        "path": "pages/tc038.html",
+        "html": "<p>https://example.com/page#section</p>"
+      },
+      "present": [
+        "https://example.com/page#section"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc039",
+      "desc": "Query+fragment",
+      "mailPath": "pages/tc039.html",
+      "page": {
+        "path": "pages/tc039.html",
+        "html": "<p>https://example.com/page?id=10#details</p>"
+      },
+      "present": [
+        "https://example.com/page?id=10#details"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc040",
+      "desc": "HTTP with port",
+      "mailPath": "pages/tc040.html",
+      "page": {
+        "path": "pages/tc040.html",
+        "html": "<p>http://example.com:8080/test</p>"
+      },
+      "present": [
+        "http://example.com:8080/test"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc041",
+      "desc": "HTTPS with port",
+      "mailPath": "pages/tc041.html",
+      "page": {
+        "path": "pages/tc041.html",
+        "html": "<p>https://example.com:8443/login</p>"
+      },
+      "present": [
+        "https://example.com:8443/login"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc042",
+      "desc": "Hyphen",
+      "mailPath": "pages/tc042.html",
+      "page": {
+        "path": "pages/tc042.html",
+        "html": "<p>https://example.com/my-test-page</p>"
+      },
+      "present": [
+        "https://example.com/my-test-page"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc043",
+      "desc": "Underscore (behaviour open)",
+      "mailPath": "pages/tc043.html",
+      "page": {
+        "path": "pages/tc043.html",
+        "html": "<p>https://example.com/my_test_page</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc044",
+      "desc": "Tilde",
+      "mailPath": "pages/tc044.html",
+      "page": {
+        "path": "pages/tc044.html",
+        "html": "<p>https://example.com/~user</p>"
+      },
+      "present": [
+        "https://example.com/~user"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc045",
+      "desc": "Percent encoding",
+      "mailPath": "pages/tc045.html",
+      "page": {
+        "path": "pages/tc045.html",
+        "html": "<p>https://example.com/my%20page</p>"
+      },
+      "present": [
+        "https://example.com/my%20page"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc046",
+      "desc": "Trailing period",
+      "mailPath": "pages/tc046.html",
+      "page": {
+        "path": "pages/tc046.html",
+        "html": "<p>Visit https://example.com.</p>"
+      },
+      "present": [
+        "https://example.com"
+      ],
+      "presentTemplate": [],
+      "absent": [
+        "https://example.com."
+      ],
+      "info": false
+    },
+    {
+      "id": "tc047",
+      "desc": "Trailing comma",
+      "mailPath": "pages/tc047.html",
+      "page": {
+        "path": "pages/tc047.html",
+        "html": "<p>Visit https://example.com, and continue.</p>"
+      },
+      "present": [
+        "https://example.com"
+      ],
+      "presentTemplate": [],
+      "absent": [
+        "https://example.com,"
+      ],
+      "info": false
+    },
+    {
+      "id": "tc048",
+      "desc": "In parentheses",
+      "mailPath": "pages/tc048.html",
+      "page": {
+        "path": "pages/tc048.html",
+        "html": "<p>(https://example.com)</p>"
+      },
+      "present": [
+        "https://example.com"
+      ],
+      "presentTemplate": [],
+      "absent": [
+        "https://example.com)"
+      ],
+      "info": false
+    },
+    {
+      "id": "tc049",
+      "desc": "In quotes",
+      "mailPath": "pages/tc049.html",
+      "page": {
+        "path": "pages/tc049.html",
+        "html": "<p>\"https://example.com\"</p>"
+      },
+      "present": [
+        "https://example.com"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc050",
+      "desc": "Trailing exclamation",
+      "mailPath": "pages/tc050.html",
+      "page": {
+        "path": "pages/tc050.html",
+        "html": "<p>Visit https://example.com!</p>"
+      },
+      "present": [
+        "https://example.com"
+      ],
+      "presentTemplate": [],
+      "absent": [
+        "https://example.com!"
+      ],
+      "info": false
+    },
+    {
+      "id": "tc051",
+      "desc": "&amp; entity decoded",
+      "mailPath": "pages/tc051.html",
+      "page": {
+        "path": "pages/tc051.html",
+        "html": "<a href=\"https://example.com/search?a=1&amp;b=2\">Search</a>"
+      },
+      "present": [
+        "https://example.com/search?a=1&b=2"
+      ],
+      "presentTemplate": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc052",
+      "desc": "Encoded chars in URL",
+      "mailPath": "pages/tc052.html",
+      "page": {
+        "path": "pages/tc052.html",
+        "html": "<p>https://example.com/x?a=1&amp;b=&quot;q&quot;&amp;c=&apos;r&apos;</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc053",
+      "desc": "img src",
+      "mailPath": "pages/tc053.html",
+      "page": {
+        "path": "pages/tc053.html",
+        "html": "<img src=\"https://example.com/image.png\">"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc054",
+      "desc": "form action",
+      "mailPath": "pages/tc054.html",
+      "page": {
+        "path": "pages/tc054.html",
+        "html": "<form action=\"https://example.com/submit\"></form>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc055",
+      "desc": "link stylesheet",
+      "mailPath": "pages/tc055.html",
+      "page": {
+        "path": "pages/tc055.html",
+        "html": "<link href=\"https://example.com/style.css\" rel=\"stylesheet\">"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc056",
+      "desc": "URL in JS string",
+      "mailPath": "pages/tc056.html",
+      "page": {
+        "path": "pages/tc056.html",
+        "html": "<script>const url = \"https://example.com/api/users\";</script>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc057",
+      "desc": "JS redirect",
+      "mailPath": "pages/tc057.html",
+      "page": {
+        "path": "pages/tc057.html",
+        "html": "<script>window.location = \"https://example.com/login\";</script>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc058",
+      "desc": "Same URL hyperlink+text",
+      "mailPath": "pages/tc058.html",
+      "page": {
+        "path": "pages/tc058.html",
+        "html": "<a href=\"https://dup1.example.com\">Example</a><p>https://dup1.example.com</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc059",
+      "desc": "Same URL multiple times",
+      "mailPath": "pages/tc059.html",
+      "page": {
+        "path": "pages/tc059.html",
+        "html": "<a href=\"https://dup2.example.com\">One</a><a href=\"https://dup2.example.com\">Two</a><p>https://dup2.example.com</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc060",
+      "desc": "Uppercase protocol",
+      "mailPath": "pages/tc060.html",
+      "page": {
+        "path": "pages/tc060.html",
+        "html": "<p>HTTP://EXAMPLE.COM</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc061",
+      "desc": "Mixed-case host",
+      "mailPath": "pages/tc061.html",
+      "page": {
+        "path": "pages/tc061.html",
+        "html": "<p>https://Example.COM/Test</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc062",
+      "desc": "URL in HTML comment",
+      "mailPath": "pages/tc062.html",
+      "page": {
+        "path": "pages/tc062.html",
+        "html": "<!-- https://example.com/comment -->"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc063",
+      "desc": "URL in hidden HTML",
+      "mailPath": "pages/tc063.html",
+      "page": {
+        "path": "pages/tc063.html",
+        "html": "<div style=\"display:none\">https://example.com/hidden</div>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc064",
+      "desc": "Empty protocol -> not extracted",
+      "mailPath": "pages/tc064.html",
+      "page": {
+        "path": "pages/tc064.html",
+        "html": "<p>https://</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [
+        "https://"
+      ],
+      "info": false
+    },
+    {
+      "id": "tc065",
+      "desc": "Invalid protocol format",
+      "mailPath": "pages/tc065.html",
+      "page": {
+        "path": "pages/tc065.html",
+        "html": "<p>https:///example.com</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc066",
+      "desc": "Space inside URL",
+      "mailPath": "pages/tc066.html",
+      "page": {
+        "path": "pages/tc066.html",
+        "html": "<p>https:// example.com</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc067",
+      "desc": "Invalid hostname",
+      "mailPath": "pages/tc067.html",
+      "page": {
+        "path": "pages/tc067.html",
+        "html": "<p>https://example..com</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc068",
+      "desc": "Incomplete domain (single label)",
+      "mailPath": "pages/tc068.html",
+      "page": {
+        "path": "pages/tc068.html",
+        "html": "<p>https://example</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc071",
+      "desc": "Leading dot -> not extracted",
+      "mailPath": "pages/tc071.html",
+      "page": {
+        "path": "pages/tc071.html",
+        "html": "<p>.example.com</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [
+        ".example.com"
+      ],
+      "info": false
+    },
+    {
+      "id": "tc072",
+      "desc": "Incomplete www",
+      "mailPath": "pages/tc072.html",
+      "page": {
+        "path": "pages/tc072.html",
+        "html": "<p>www.</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [
+        "www."
+      ],
+      "info": false
+    },
+    {
+      "id": "tc073",
+      "desc": "Ordinary dotted text",
+      "mailPath": "pages/tc073.html",
+      "page": {
+        "path": "pages/tc073.html",
+        "html": "<p>hello.world</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
+    },
+    {
+      "id": "tc074",
+      "desc": "Mixed URL representations (assert the deterministic ones).",
+      "mailPath": "pages/tc074.html",
+      "page": {
+        "path": "pages/tc074.html",
+        "html": "<a href=\"https://example.com/hyperlink\">Hyperlink</a><p>https://example.com/plain-text</p><p>www.example.org</p><p>example.net/page</p><a href=\"/relative\">Relative</a><a href=\"//cdn.example.com/file\">Protocol relative</a><a href=\"https://münich.com\">IDN</a><a href=\"https://xn--mnich-kva.com\">Punycode</a>"
+      },
+      "present": [
+        "https://example.com/hyperlink",
+        "https://example.com/plain-text",
+        "https://xn--mnich-kva.com"
+      ],
+      "presentTemplate": [
+        "{ORIGIN}/relative"
+      ],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "tc_comprehensive",
+      "desc": "Comprehensive page — log the full extraction for manual review.",
+      "mailPath": "pages/tc_comprehensive.html",
+      "page": {
+        "path": "pages/tc_comprehensive.html",
+        "html": "<h1>URL Extraction Test Page</h1><a href=\"https://example.com/https\">HTTPS URL</a><a href=\"http://example.com/http\">HTTP URL</a><p>https://example.com/plain-text</p><p>www.example.com/page</p><p>example.org/test</p><a href=\"/login\">Relative URL</a><a href=\"../about\">Parent relative URL</a><a href=\"//cdn.example.com/file.js\">Protocol relative</a><a href=\"https://münich.com\">IDN URL</a><a href=\"https://例え.テスト\">Unicode IDN</a><a href=\"https://xn--mnich-kva.com\">Punycode URL</a><p>https://example.com/日本語</p><p>https://example.com/தமிழ்</p><p>https://example.com/search?q=test&amp;page=2</p><p>https://example.com/page#section1</p><p>https://example.com:8443/login</p><p>Visit https://example.com.</p><p>Visit https://example.org, for more information.</p><a href=\"https://duplicate.example.com\">Duplicate</a><p>https://duplicate.example.com</p><p>Contact user@example.com</p><p>This is not a URL: hello.world</p>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "absent": [],
+      "info": true
     }
   ]
 }
