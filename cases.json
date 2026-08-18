@@ -13,6 +13,7 @@
         "https://example.com/page"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -28,6 +29,7 @@
         "http://example.com/page"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -43,6 +45,7 @@
         "https://example.com/page?id=123"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -58,6 +61,7 @@
         "https://example.com/page#section"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -73,6 +77,7 @@
         "https://example.com/page?id=10#details"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -88,6 +93,7 @@
         "http://example.com:8080/test"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -103,6 +109,7 @@
         "https://example.com:8443/login"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -118,6 +125,7 @@
         "https://example.com/my%20page"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -133,6 +141,7 @@
         "https://example.com/path%2Fwith%2Fslashes"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -148,6 +157,7 @@
         "https://example.com/%E6%97%A5%E6%9C%AC%E8%AA%9E"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -163,6 +173,7 @@
         "https://example.com/my-test-page"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -178,6 +189,7 @@
         "https://example.com/~user"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -193,6 +205,7 @@
         "https://example.com/a/b/c/d/resource"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -208,6 +221,7 @@
         "https://xn--mnich-kva.com"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -223,6 +237,7 @@
         "https://example.com/page"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -238,6 +253,7 @@
         "https://example.com/search?q=test&sort=desc&page=2"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -253,6 +269,7 @@
         "https://example.com/search?a=1&b=2"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -268,6 +285,7 @@
         "https://example.com/page"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -283,6 +301,7 @@
         "http://example.com/page"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -298,6 +317,7 @@
         "https://example.com"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [
         "https://example.com."
       ],
@@ -315,6 +335,7 @@
         "https://example.com"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [
         "https://example.com,"
       ],
@@ -332,6 +353,7 @@
         "https://example.com"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [
         "https://example.com)"
       ],
@@ -349,6 +371,7 @@
         "https://example.com"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [
         "https://example.com!"
       ],
@@ -366,6 +389,7 @@
         "https://example.com/actual-page"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [
         "Click Here"
       ],
@@ -383,6 +407,7 @@
       "presentTemplate": [
         "{ORIGIN}/login"
       ],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -398,6 +423,7 @@
       "presentTemplate": [
         "{BASE}/v1/login"
       ],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -413,6 +439,7 @@
       "presentTemplate": [
         "{BASE}/v1/relative/login"
       ],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -428,6 +455,7 @@
       "presentTemplate": [
         "{ORIGIN}/search?q=test"
       ],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -443,6 +471,7 @@
       "presentTemplate": [
         "{ORIGIN}/page#section1"
       ],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -458,255 +487,366 @@
       "presentTemplate": [
         "{BASE}/v1/relative/next"
       ],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
     {
-      "id": "info_idn-unicode",
-      "desc": "unicode domain",
-      "mailPath": "v1/info/idn-unicode.html",
+      "id": "location_img-src",
+      "desc": "URL in <img src>",
+      "mailPath": "v1/location/img-src.html",
       "page": {
-        "path": "v1/info/idn-unicode.html",
+        "path": "v1/location/img-src.html",
+        "html": "<img src=\"https://example.com/image.png\">"
+      },
+      "present": [
+        "https://example.com/image.png"
+      ],
+      "presentTemplate": [],
+      "presentAny": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "location_form-action",
+      "desc": "URL in <form action>",
+      "mailPath": "v1/location/form-action.html",
+      "page": {
+        "path": "v1/location/form-action.html",
+        "html": "<form action=\"https://example.com/submit\"></form>"
+      },
+      "present": [
+        "https://example.com/submit"
+      ],
+      "presentTemplate": [],
+      "presentAny": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "location_link-stylesheet",
+      "desc": "URL in <link href>",
+      "mailPath": "v1/location/link-stylesheet.html",
+      "page": {
+        "path": "v1/location/link-stylesheet.html",
+        "html": "<link href=\"https://example.com/style.css\" rel=\"stylesheet\">"
+      },
+      "present": [
+        "https://example.com/style.css"
+      ],
+      "presentTemplate": [],
+      "presentAny": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "location_js-string",
+      "desc": "URL in JS string",
+      "mailPath": "v1/location/js-string.html",
+      "page": {
+        "path": "v1/location/js-string.html",
+        "html": "<script>const u = \"https://example.com/api/users\";</script>"
+      },
+      "present": [
+        "https://example.com/api/users"
+      ],
+      "presentTemplate": [],
+      "presentAny": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "location_js-redirect",
+      "desc": "URL in JS redirect",
+      "mailPath": "v1/location/js-redirect.html",
+      "page": {
+        "path": "v1/location/js-redirect.html",
+        "html": "<script>window.location = \"https://example.com/login\";</script>"
+      },
+      "present": [
+        "https://example.com/login"
+      ],
+      "presentTemplate": [],
+      "presentAny": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "location_comment",
+      "desc": "URL in HTML comment",
+      "mailPath": "v1/location/comment.html",
+      "page": {
+        "path": "v1/location/comment.html",
+        "html": "<!-- https://example.com/comment -->"
+      },
+      "present": [
+        "https://example.com/comment"
+      ],
+      "presentTemplate": [],
+      "presentAny": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "location_hidden",
+      "desc": "URL in display:none block",
+      "mailPath": "v1/location/hidden.html",
+      "page": {
+        "path": "v1/location/hidden.html",
+        "html": "<div style=\"display:none\">https://example.com/hidden</div>"
+      },
+      "present": [
+        "https://example.com/hidden"
+      ],
+      "presentTemplate": [],
+      "presentAny": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "location_duplicate",
+      "desc": "same URL as hyperlink + plain text (must appear at least once)",
+      "mailPath": "v1/location/duplicate.html",
+      "page": {
+        "path": "v1/location/duplicate.html",
+        "html": "<a href=\"https://dup.example.com\">link</a>\n<br><br>\n<p>https://dup.example.com</p>"
+      },
+      "present": [
+        "https://dup.example.com"
+      ],
+      "presentTemplate": [],
+      "presentAny": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "single_underscore",
+      "desc": "underscore in path",
+      "mailPath": "v1/single/underscore.html",
+      "page": {
+        "path": "v1/single/underscore.html",
+        "html": "<p>https://example.com/my_test_page</p>"
+      },
+      "present": [
+        "https://example.com/my_test_page"
+      ],
+      "presentTemplate": [],
+      "presentAny": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "representation_idn-domain",
+      "desc": "IDN domain (unicode or punycode)",
+      "mailPath": "v1/representation/idn-domain.html",
+      "page": {
+        "path": "v1/representation/idn-domain.html",
         "html": "<a href=\"https://münich.com\">link</a>"
       },
       "present": [],
       "presentTemplate": [],
+      "presentAny": [
+        [
+          "https://münich.com",
+          "https://xn--mnich-kva.com"
+        ]
+      ],
       "absent": [],
-      "info": true
+      "info": false
     },
     {
-      "id": "info_idn-unicode-path",
-      "desc": "unicode domain + path",
-      "mailPath": "v1/info/idn-unicode-path.html",
+      "id": "representation_idn-domain-path",
+      "desc": "IDN domain + unicode path",
+      "mailPath": "v1/representation/idn-domain-path.html",
       "page": {
-        "path": "v1/info/idn-unicode-path.html",
+        "path": "v1/representation/idn-domain-path.html",
         "html": "<a href=\"https://münich.com/café\">link</a>"
       },
       "present": [],
       "presentTemplate": [],
+      "presentAny": [
+        [
+          "https://münich.com/café",
+          "https://münich.com/caf%C3%A9",
+          "https://xn--mnich-kva.com/café",
+          "https://xn--mnich-kva.com/caf%C3%A9"
+        ]
+      ],
       "absent": [],
-      "info": true
+      "info": false
     },
     {
-      "id": "info_idn-nonlatin",
+      "id": "representation_idn-nonlatin",
       "desc": "non-Latin IDN",
-      "mailPath": "v1/info/idn-nonlatin.html",
+      "mailPath": "v1/representation/idn-nonlatin.html",
       "page": {
-        "path": "v1/info/idn-nonlatin.html",
+        "path": "v1/representation/idn-nonlatin.html",
         "html": "<a href=\"https://例え.テスト\">link</a>"
       },
       "present": [],
       "presentTemplate": [],
+      "presentAny": [
+        [
+          "https://例え.テスト",
+          "https://xn--r8jz45g.xn--zckzah"
+        ]
+      ],
       "absent": [],
-      "info": true
+      "info": false
     },
     {
-      "id": "info_idn-mixed",
+      "id": "representation_idn-mixed",
       "desc": "unicode + punycode label",
-      "mailPath": "v1/info/idn-mixed.html",
+      "mailPath": "v1/representation/idn-mixed.html",
       "page": {
-        "path": "v1/info/idn-mixed.html",
+        "path": "v1/representation/idn-mixed.html",
         "html": "<a href=\"https://例え.xn--p1ai\">link</a>"
       },
       "present": [],
       "presentTemplate": [],
+      "presentAny": [
+        [
+          "https://例え.xn--p1ai",
+          "https://xn--r8jz45g.xn--p1ai"
+        ]
+      ],
       "absent": [],
-      "info": true
+      "info": false
     },
     {
-      "id": "info_unicode-path",
+      "id": "representation_unicode-path",
       "desc": "unicode path",
-      "mailPath": "v1/info/unicode-path.html",
+      "mailPath": "v1/representation/unicode-path.html",
       "page": {
-        "path": "v1/info/unicode-path.html",
+        "path": "v1/representation/unicode-path.html",
         "html": "<p>https://example.com/日本語</p>"
       },
       "present": [],
       "presentTemplate": [],
+      "presentAny": [
+        [
+          "https://example.com/日本語",
+          "https://example.com/%E6%97%A5%E6%9C%AC%E8%AA%9E"
+        ]
+      ],
       "absent": [],
-      "info": true
+      "info": false
     },
     {
-      "id": "info_unicode-query",
+      "id": "representation_unicode-query",
       "desc": "unicode query",
-      "mailPath": "v1/info/unicode-query.html",
+      "mailPath": "v1/representation/unicode-query.html",
       "page": {
-        "path": "v1/info/unicode-query.html",
+        "path": "v1/representation/unicode-query.html",
         "html": "<p>https://example.com/search?q=தமிழ்</p>"
       },
       "present": [],
       "presentTemplate": [],
+      "presentAny": [
+        [
+          "https://example.com/search?q=தமிழ்",
+          "https://example.com/search?q=%E0%AE%A4%E0%AE%AE%E0%AE%BF%E0%AE%B4%E0%AF%8D"
+        ]
+      ],
       "absent": [],
-      "info": true
+      "info": false
     },
     {
-      "id": "info_no-protocol-domain",
-      "desc": "domain without protocol",
-      "mailPath": "v1/info/no-protocol-domain.html",
+      "id": "representation_no-protocol-domain",
+      "desc": "bare domain (http:// may be prepended)",
+      "mailPath": "v1/representation/no-protocol-domain.html",
       "page": {
-        "path": "v1/info/no-protocol-domain.html",
-        "html": "<p>Visit example.com</p>"
+        "path": "v1/representation/no-protocol-domain.html",
+        "html": "<p>Visit example.com here.</p>"
       },
       "present": [],
       "presentTemplate": [],
+      "presentAny": [
+        [
+          "http://example.com",
+          "example.com"
+        ]
+      ],
       "absent": [],
-      "info": true
+      "info": false
     },
     {
-      "id": "info_no-protocol-www",
-      "desc": "www without protocol",
-      "mailPath": "v1/info/no-protocol-www.html",
+      "id": "representation_no-protocol-www",
+      "desc": "www domain, no protocol",
+      "mailPath": "v1/representation/no-protocol-www.html",
       "page": {
-        "path": "v1/info/no-protocol-www.html",
-        "html": "<p>Visit www.example.com</p>"
+        "path": "v1/representation/no-protocol-www.html",
+        "html": "<p>Visit www.example.com here.</p>"
       },
       "present": [],
       "presentTemplate": [],
+      "presentAny": [
+        [
+          "http://www.example.com",
+          "www.example.com"
+        ]
+      ],
       "absent": [],
-      "info": true
+      "info": false
     },
     {
-      "id": "info_no-protocol-path",
-      "desc": "protocol-less with path",
-      "mailPath": "v1/info/no-protocol-path.html",
+      "id": "representation_no-protocol-path",
+      "desc": "bare domain + path",
+      "mailPath": "v1/representation/no-protocol-path.html",
       "page": {
-        "path": "v1/info/no-protocol-path.html",
-        "html": "<p>Visit example.com/products/item1</p>"
+        "path": "v1/representation/no-protocol-path.html",
+        "html": "<p>Visit example.com/products/item1 here.</p>"
       },
       "present": [],
       "presentTemplate": [],
+      "presentAny": [
+        [
+          "http://example.com/products/item1",
+          "example.com/products/item1"
+        ]
+      ],
       "absent": [],
-      "info": true
+      "info": false
     },
     {
-      "id": "info_underscore",
-      "desc": "underscore in path",
-      "mailPath": "v1/info/underscore.html",
+      "id": "representation_uppercase-protocol",
+      "desc": "uppercase protocol/host",
+      "mailPath": "v1/representation/uppercase-protocol.html",
       "page": {
-        "path": "v1/info/underscore.html",
-        "html": "<p>https://example.com/my_test_page</p>"
-      },
-      "present": [],
-      "presentTemplate": [],
-      "absent": [],
-      "info": true
-    },
-    {
-      "id": "info_uppercase-protocol",
-      "desc": "uppercase protocol",
-      "mailPath": "v1/info/uppercase-protocol.html",
-      "page": {
-        "path": "v1/info/uppercase-protocol.html",
+        "path": "v1/representation/uppercase-protocol.html",
         "html": "<p>HTTP://EXAMPLE.COM</p>"
       },
       "present": [],
       "presentTemplate": [],
+      "presentAny": [
+        [
+          "http://example.com",
+          "http://EXAMPLE.COM",
+          "HTTP://EXAMPLE.COM"
+        ]
+      ],
       "absent": [],
-      "info": true
+      "info": false
     },
     {
-      "id": "info_mixed-case-host",
+      "id": "representation_mixed-case-host",
       "desc": "mixed-case host",
-      "mailPath": "v1/info/mixed-case-host.html",
+      "mailPath": "v1/representation/mixed-case-host.html",
       "page": {
-        "path": "v1/info/mixed-case-host.html",
+        "path": "v1/representation/mixed-case-host.html",
         "html": "<p>https://Example.COM/Test</p>"
       },
       "present": [],
       "presentTemplate": [],
+      "presentAny": [
+        [
+          "https://example.com/Test",
+          "https://Example.COM/Test",
+          "https://example.com/test"
+        ]
+      ],
       "absent": [],
-      "info": true
-    },
-    {
-      "id": "info_img-src",
-      "desc": "img src",
-      "mailPath": "v1/info/img-src.html",
-      "page": {
-        "path": "v1/info/img-src.html",
-        "html": "<img src=\"https://example.com/image.png\">"
-      },
-      "present": [],
-      "presentTemplate": [],
-      "absent": [],
-      "info": true
-    },
-    {
-      "id": "info_form-action",
-      "desc": "form action",
-      "mailPath": "v1/info/form-action.html",
-      "page": {
-        "path": "v1/info/form-action.html",
-        "html": "<form action=\"https://example.com/submit\"></form>"
-      },
-      "present": [],
-      "presentTemplate": [],
-      "absent": [],
-      "info": true
-    },
-    {
-      "id": "info_link-stylesheet",
-      "desc": "link stylesheet",
-      "mailPath": "v1/info/link-stylesheet.html",
-      "page": {
-        "path": "v1/info/link-stylesheet.html",
-        "html": "<link href=\"https://example.com/style.css\" rel=\"stylesheet\">"
-      },
-      "present": [],
-      "presentTemplate": [],
-      "absent": [],
-      "info": true
-    },
-    {
-      "id": "info_js-string",
-      "desc": "URL in JS string",
-      "mailPath": "v1/info/js-string.html",
-      "page": {
-        "path": "v1/info/js-string.html",
-        "html": "<script>const u = \"https://example.com/api/users\";</script>"
-      },
-      "present": [],
-      "presentTemplate": [],
-      "absent": [],
-      "info": true
-    },
-    {
-      "id": "info_js-redirect",
-      "desc": "JS redirect",
-      "mailPath": "v1/info/js-redirect.html",
-      "page": {
-        "path": "v1/info/js-redirect.html",
-        "html": "<script>window.location = \"https://example.com/login\";</script>"
-      },
-      "present": [],
-      "presentTemplate": [],
-      "absent": [],
-      "info": true
-    },
-    {
-      "id": "info_comment",
-      "desc": "URL in HTML comment",
-      "mailPath": "v1/info/comment.html",
-      "page": {
-        "path": "v1/info/comment.html",
-        "html": "<!-- https://example.com/comment -->"
-      },
-      "present": [],
-      "presentTemplate": [],
-      "absent": [],
-      "info": true
-    },
-    {
-      "id": "info_hidden",
-      "desc": "hidden URL",
-      "mailPath": "v1/info/hidden.html",
-      "page": {
-        "path": "v1/info/hidden.html",
-        "html": "<div style=\"display:none\">https://example.com/hidden</div>"
-      },
-      "present": [],
-      "presentTemplate": [],
-      "absent": [],
-      "info": true
+      "info": false
     },
     {
       "id": "info_invalid-host",
@@ -718,6 +858,7 @@
       },
       "present": [],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": true
     },
@@ -731,12 +872,13 @@
       },
       "present": [],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": true
     },
     {
       "id": "info_invalid-scheme",
-      "desc": "triple slash",
+      "desc": "triple slash after scheme",
       "mailPath": "v1/info/invalid-scheme.html",
       "page": {
         "path": "v1/info/invalid-scheme.html",
@@ -744,6 +886,7 @@
       },
       "present": [],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": true
     },
@@ -757,6 +900,7 @@
       },
       "present": [],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": true
     },
@@ -770,19 +914,7 @@
       },
       "present": [],
       "presentTemplate": [],
-      "absent": [],
-      "info": true
-    },
-    {
-      "id": "info_dup-hyperlink-text",
-      "desc": "duplicate hyperlink+text",
-      "mailPath": "v1/info/dup-hyperlink-text.html",
-      "page": {
-        "path": "v1/info/dup-hyperlink-text.html",
-        "html": "<a href=\"https://dup.example.com\">link</a>\n<br><br>\n<p>https://dup.example.com</p>"
-      },
-      "present": [],
-      "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": true
     },
@@ -796,6 +928,7 @@
       },
       "present": [],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [
         "https://"
       ],
@@ -811,6 +944,7 @@
       },
       "present": [],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [
         ".example.com"
       ],
@@ -826,6 +960,7 @@
       },
       "present": [],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [
         "www."
       ],
@@ -849,6 +984,7 @@
         "https://xn--mnich-kva.com"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -868,6 +1004,7 @@
         "https://example.com/q5?e=5"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -887,6 +1024,7 @@
         "https://example.com/f5#e"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -905,6 +1043,7 @@
         "http://example.com:3000/p4"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -924,6 +1063,7 @@
         "https://example.com/a/b/c/d/e/five"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -941,6 +1081,7 @@
         "https://xn--fiqs8s.com/3"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -965,6 +1106,7 @@
         "https://example.com/my-hyphen-page"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -988,6 +1130,7 @@
         "https://other.com/abs"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -1006,6 +1149,7 @@
         "https://drive.google.com/root"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -1022,6 +1166,7 @@
         "https://drive.google.com/file"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -1038,6 +1183,7 @@
         "https://xn--mnchen-3ya.de/data"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -1054,6 +1200,7 @@
         "https://[2001:db8::1]:8080/x"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -1070,6 +1217,7 @@
         "https://user:pass@example.com/public"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -1086,6 +1234,7 @@
         "https://example.com/caf%C3%A9/path%2Fwith%2Fslashes"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -1102,6 +1251,7 @@
         "https://cdn.example.com/x"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -1117,6 +1267,7 @@
         "https://first-base.com/dir/page"
       ],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": false
     },
@@ -1130,6 +1281,7 @@
       },
       "present": [],
       "presentTemplate": [],
+      "presentAny": [],
       "absent": [],
       "info": true
     }

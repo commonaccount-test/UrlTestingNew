@@ -20,10 +20,23 @@ Outcome per case:
   absent       : must NOT appear
   info=True    : log only, no assertion
 """
-import json, os
+import json, os, urllib.parse
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 cases = []
+
+def puny(host):
+    """Punycode form of an IDN host (best effort); None if it can't be encoded."""
+    try:
+        return ".".join(
+            lbl.encode("idna").decode("ascii") if any(ord(ch) > 127 for ch in lbl) else lbl
+            for lbl in host.split("."))
+    except Exception:
+        return None
+
+def pct(s):
+    """Percent-encode a path/query component (keep it readable — no safe chars)."""
+    return urllib.parse.quote(s, safe="")
 
 # ── Cache-buster ────────────────────────────────────────────────────────────────────────────
 # The URL scanner caches results by URL hash. To force a fresh fetch+extract, BUMP THIS on every
@@ -31,7 +44,7 @@ cases = []
 # the cache misses. Relative-resolution templates below include VER because the page dir carries it.
 VER = "v1"
 
-def add(path, html, present=None, presentTmpl=None, absent=None, info=False, desc=""):
+def add(path, html, present=None, presentTmpl=None, presentAny=None, absent=None, info=False, desc=""):
     # `path` is an extensionless id-path, e.g. "single/https".
     cid = path.replace("/", "_")       # single/https -> single_https (stable across versions)
     full = VER + "/" + path + ".html"  # v1/single/https.html (the actual page path & mail URL)
@@ -39,6 +52,7 @@ def add(path, html, present=None, presentTmpl=None, absent=None, info=False, des
         "id": cid, "desc": desc, "mailPath": full,
         "page": {"path": full, "html": html},
         "present": present or [], "presentTemplate": presentTmpl or [],
+        "presentAny": presentAny or [],  # each group: at least ONE accepted form must be extracted
         "absent": absent or [], "info": bool(info),
     })
 
@@ -118,37 +132,79 @@ add("relative/meta-refresh", '<meta http-equiv="refresh" content="5;url=next">',
     presentTmpl=["{BASE}/%s/relative/next" % VER], desc="meta-refresh path-relative target")
 
 # ══════════════════════════════════════════════════════════════════════════════════════════
-# 7. INFO — spec leaves open; log only
+# 7a. LOCATION — same valid URL in different HTML locations. Must be extracted (assert present).
 # ══════════════════════════════════════════════════════════════════════════════════════════
-INFO_HREF = [
-    ("info/idn-unicode",        A("https://münich.com"),                       "unicode domain"),
-    ("info/idn-unicode-path",   A("https://münich.com/café"),                  "unicode domain + path"),
-    ("info/idn-nonlatin",       A("https://例え.テスト"),                        "non-Latin IDN"),
-    ("info/idn-mixed",          A("https://例え.xn--p1ai"),                     "unicode + punycode label"),
-    ("info/unicode-path",       "<p>https://example.com/日本語</p>",            "unicode path"),
-    ("info/unicode-query",      "<p>https://example.com/search?q=தமிழ்</p>",   "unicode query"),
-    ("info/no-protocol-domain", "<p>Visit example.com</p>",                    "domain without protocol"),
-    ("info/no-protocol-www",    "<p>Visit www.example.com</p>",                "www without protocol"),
-    ("info/no-protocol-path",   "<p>Visit example.com/products/item1</p>",     "protocol-less with path"),
-    ("info/underscore",         "<p>https://example.com/my_test_page</p>",     "underscore in path"),
-    ("info/uppercase-protocol", "<p>HTTP://EXAMPLE.COM</p>",                    "uppercase protocol"),
-    ("info/mixed-case-host",    "<p>https://Example.COM/Test</p>",             "mixed-case host"),
-    ("info/img-src",            '<img src="https://example.com/image.png">',   "img src"),
-    ("info/form-action",        '<form action="https://example.com/submit"></form>', "form action"),
-    ("info/link-stylesheet",    '<link href="https://example.com/style.css" rel="stylesheet">', "link stylesheet"),
-    ("info/js-string",          '<script>const u = "https://example.com/api/users";</script>', "URL in JS string"),
-    ("info/js-redirect",        '<script>window.location = "https://example.com/login";</script>', "JS redirect"),
-    ("info/comment",            "<!-- https://example.com/comment -->",        "URL in HTML comment"),
-    ("info/hidden",             '<div style="display:none">https://example.com/hidden</div>', "hidden URL"),
-    ("info/invalid-host",       "<p>https://example..com</p>",                 "double-dot host"),
-    ("info/incomplete-domain",  "<p>https://example</p>",                      "single-label host"),
-    ("info/invalid-scheme",     "<p>https:///example.com</p>",                 "triple slash"),
-    ("info/space-in-url",       "<p>https:// example.com</p>",                 "space inside URL"),
-    ("info/domain-text",        "<p>hello.world</p>",                          "ordinary dotted text"),
-    ("info/dup-hyperlink-text", rows([A("https://dup.example.com"), "<p>https://dup.example.com</p>"]), "duplicate hyperlink+text"),
-]
-for path, html, d in INFO_HREF:
-    add(path, html, info=True, desc=d)
+add("location/img-src",         '<img src="https://example.com/image.png">',
+    present=["https://example.com/image.png"], desc="URL in <img src>")
+add("location/form-action",     '<form action="https://example.com/submit"></form>',
+    present=["https://example.com/submit"], desc="URL in <form action>")
+add("location/link-stylesheet", '<link href="https://example.com/style.css" rel="stylesheet">',
+    present=["https://example.com/style.css"], desc="URL in <link href>")
+add("location/js-string",       '<script>const u = "https://example.com/api/users";</script>',
+    present=["https://example.com/api/users"], desc="URL in JS string")
+add("location/js-redirect",     '<script>window.location = "https://example.com/login";</script>',
+    present=["https://example.com/login"], desc="URL in JS redirect")
+add("location/comment",         "<!-- https://example.com/comment -->",
+    present=["https://example.com/comment"], desc="URL in HTML comment")
+add("location/hidden",          '<div style="display:none">https://example.com/hidden</div>',
+    present=["https://example.com/hidden"], desc="URL in display:none block")
+add("location/duplicate",       rows([A("https://dup.example.com"), "<p>https://dup.example.com</p>"]),
+    present=["https://dup.example.com"], desc="same URL as hyperlink + plain text (must appear at least once)")
+add("single/underscore",        "<p>https://example.com/my_test_page</p>",
+    present=["https://example.com/my_test_page"], desc="underscore in path")
+
+# ══════════════════════════════════════════════════════════════════════════════════════════
+# 7b. REPRESENTATION — must be extracted; only the exact string form is uncertain (presentAny).
+# ══════════════════════════════════════════════════════════════════════════════════════════
+def any_group(*forms):
+    return [f for f in forms if f]
+
+# IDN — accept unicode OR punycode form
+add("representation/idn-domain", A("https://münich.com"),
+    presentAny=[any_group("https://münich.com", "https://" + (puny("münich.com") or ""))],
+    desc="IDN domain (unicode or punycode)")
+add("representation/idn-domain-path", A("https://münich.com/café"),
+    presentAny=[any_group(
+        "https://münich.com/café", "https://münich.com/" + pct("café"),
+        "https://%s/café" % puny("münich.com"), "https://%s/%s" % (puny("münich.com"), pct("café")))],
+    desc="IDN domain + unicode path")
+add("representation/idn-nonlatin", A("https://例え.テスト"),
+    presentAny=[any_group("https://例え.テスト", "https://" + (puny("例え.テスト") or ""))],
+    desc="non-Latin IDN")
+add("representation/idn-mixed", A("https://例え.xn--p1ai"),
+    presentAny=[any_group("https://例え.xn--p1ai", "https://" + (puny("例え.xn--p1ai") or ""))],
+    desc="unicode + punycode label")
+# Unicode in path / query — accept raw OR percent-encoded
+add("representation/unicode-path", "<p>https://example.com/日本語</p>",
+    presentAny=[any_group("https://example.com/日本語", "https://example.com/" + pct("日本語"))],
+    desc="unicode path")
+add("representation/unicode-query", "<p>https://example.com/search?q=தமிழ்</p>",
+    presentAny=[any_group("https://example.com/search?q=தமிழ்", "https://example.com/search?q=" + pct("தமிழ்"))],
+    desc="unicode query")
+# No protocol — accept as-is OR with http:// prepended
+add("representation/no-protocol-domain", "<p>Visit example.com here.</p>",
+    presentAny=[any_group("http://example.com", "example.com")], desc="bare domain (http:// may be prepended)")
+add("representation/no-protocol-www", "<p>Visit www.example.com here.</p>",
+    presentAny=[any_group("http://www.example.com", "www.example.com")], desc="www domain, no protocol")
+add("representation/no-protocol-path", "<p>Visit example.com/products/item1 here.</p>",
+    presentAny=[any_group("http://example.com/products/item1", "example.com/products/item1")],
+    desc="bare domain + path")
+# Case — accept normalized or as-is
+add("representation/uppercase-protocol", "<p>HTTP://EXAMPLE.COM</p>",
+    presentAny=[any_group("http://example.com", "http://EXAMPLE.COM", "HTTP://EXAMPLE.COM")],
+    desc="uppercase protocol/host")
+add("representation/mixed-case-host", "<p>https://Example.COM/Test</p>",
+    presentAny=[any_group("https://example.com/Test", "https://Example.COM/Test", "https://example.com/test")],
+    desc="mixed-case host")
+
+# ══════════════════════════════════════════════════════════════════════════════════════════
+# 7c. INFO — genuinely malformed / validity-open (log only; asserting either way would guess).
+# ══════════════════════════════════════════════════════════════════════════════════════════
+add("info/invalid-host",      "<p>https://example..com</p>",  info=True, desc="double-dot host")
+add("info/incomplete-domain", "<p>https://example</p>",       info=True, desc="single-label host")
+add("info/invalid-scheme",    "<p>https:///example.com</p>",  info=True, desc="triple slash after scheme")
+add("info/space-in-url",      "<p>https:// example.com</p>",   info=True, desc="space inside URL")
+add("info/domain-text",       "<p>hello.world</p>",            info=True, desc="ordinary dotted text")
 
 # ══════════════════════════════════════════════════════════════════════════════════════════
 # 6. NEGATIVE — must NOT be extracted
@@ -313,6 +369,7 @@ with open(os.path.join(HERE, "cases.json"), "w", encoding="utf-8") as fh:
     json.dump(out, fh, ensure_ascii=False, indent=2)
 
 ap = sum(1 for c in cases if c["present"] or c["presentTemplate"])
+an = sum(1 for c in cases if c["presentAny"])
 aa = sum(1 for c in cases if c["absent"])
 inf = sum(1 for c in cases if c["info"])
-print("wrote cases.json: %d cases (assert-present:%d assert-absent:%d info:%d)" % (len(cases), ap, aa, inf))
+print("wrote cases.json: %d cases (present:%d present-any-form:%d absent:%d info:%d)" % (len(cases), ap, an, aa, inf))
