@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>base-relative_directory</title>
+</head>
+<body>
+<h3>base = https://example.com/a/b/</h3>
+<base href="https://example.com/a/b/" target="_blank">
+<br><br>
+<a href="c/d">c/d</a>
+<br><br>
+<a href="x/y/z">x/y/z</a>
+<br><br>
+<a href="../up">../up</a>
+<br><br>
+<a href="./same">./same</a>
+<br><br>
+<a href="?q=1">?q=1</a>
+<br><br>
+<a href="#frag">#frag</a>
+<br><br>
+<a href="/root">/root</a>
+<br><br>
+<a href="//cdn.example.com/p">//cdn.example.com/p</a>
+<br><br>
+<a href="https://other.com/abs">https://other.com/abs</a>
+</body>
+</html>
