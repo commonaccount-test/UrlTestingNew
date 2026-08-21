@@ -355,6 +355,132 @@ add("base-relative/undefined",
         A("file/d/asj", "scheme-less base")]),
     info=True, desc="scheme-less / backslash-host bases (undefined)")
 
+# ══════════════════════════════════════════════════════════════════════════════════════════
+# 8. MISSED — additional URL locations/representations (missed_webpage_url_extraction_test_cases)
+#    All real http(s) URLs are asserted present; non-http schemes / dynamic-exec / encoded-ambiguous
+#    are info; response-header & HTTP-redirect cases are omitted (not coverable on GitHub Pages).
+# ══════════════════════════════════════════════════════════════════════════════════════════
+
+# -- 1. Meta refresh variants --
+add("missed/meta-immediate-absolute", '<meta http-equiv="refresh" content="0;url=https://example.com/immediate">',
+    present=["https://example.com/immediate"], desc="meta refresh, immediate absolute")
+add("missed/meta-delay-spaces", '<meta http-equiv="refresh" content="5; url=https://example.com/path">',
+    present=["https://example.com/path"], desc="meta refresh, delay + space before url")
+add("missed/meta-relative", '<meta http-equiv="refresh" content="5;url=/login">',
+    presentTmpl=["{ORIGIN}/login"], desc="meta refresh, root-relative target")
+add("missed/meta-quoted-idn", '<meta http-equiv="refresh" content="5;url=\'https://münich.com\'">',
+    presentAny=[any_group("https://münich.com", "https://" + (puny("münich.com") or ""))],
+    desc="meta refresh, quoted IDN target")
+
+# -- 2. Link and metadata URLs --
+add("missed/link-canonical", '<link rel="canonical" href="https://example.com/canonical">',
+    present=["https://example.com/canonical"], desc="rel=canonical")
+add("missed/link-alternate", '<link rel="alternate" hreflang="fr" href="https://example.com/fr">',
+    present=["https://example.com/fr"], desc="rel=alternate hreflang")
+add("missed/link-amp", '<link rel="amphtml" href="https://example.com/amp">',
+    present=["https://example.com/amp"], desc="rel=amphtml")
+add("missed/link-prev", '<link rel="prev" href="https://example.com/p/1">',
+    present=["https://example.com/p/1"], desc="rel=prev")
+add("missed/og-url", '<meta property="og:url" content="https://example.com/og-page">',
+    present=["https://example.com/og-page"], desc="Open Graph og:url")
+add("missed/og-image", '<meta property="og:image" content="https://example.com/og-image.jpg">',
+    present=["https://example.com/og-image.jpg"], desc="Open Graph og:image")
+add("missed/twitter-url", '<meta name="twitter:url" content="https://example.com/tw-page">',
+    present=["https://example.com/tw-page"], desc="twitter:url")
+add("missed/meta-base-only", '<base href="https://example.com/base-only/">',
+    info=True, desc="bare <base href> (is the base URL itself extracted?)")
+
+# -- 3. Embedded, media and form URLs --
+add("missed/iframe", '<iframe src="https://example.com/frame"></iframe>',
+    present=["https://example.com/frame"], desc="iframe src")
+add("missed/object", '<object data="https://example.com/file.pdf"></object>',
+    present=["https://example.com/file.pdf"], desc="object data")
+add("missed/embed", '<embed src="https://example.com/embed-file">',
+    present=["https://example.com/embed-file"], desc="embed src")
+add("missed/img", '<img src="https://example.com/image.jpg">',
+    present=["https://example.com/image.jpg"], desc="img src")
+add("missed/srcset", '<img srcset="https://example.com/a.jpg 1x, https://example.com/b.jpg 2x">',
+    present=["https://example.com/a.jpg", "https://example.com/b.jpg"], desc="srcset — each URL")
+add("missed/video", '<video src="https://example.com/video.mp4"></video>',
+    present=["https://example.com/video.mp4"], desc="video src")
+add("missed/form-action", '<form action="https://example.com/form-submit"></form>',
+    present=["https://example.com/form-submit"], desc="form action")
+add("missed/formaction", '<button formaction="https://example.com/btn-submit">Go</button>',
+    present=["https://example.com/btn-submit"], desc="button formaction")
+
+# -- 4. JavaScript and event URLs --
+add("missed/js-location-href", '<script>window.location.href = "https://example.com/js-href";</script>',
+    present=["https://example.com/js-href"], desc="location.href")
+add("missed/js-location-assign", '<script>location.assign("https://example.com/js-assign");</script>',
+    present=["https://example.com/js-assign"], desc="location.assign")
+add("missed/js-location-replace", '<script>location.replace("https://example.com/js-replace");</script>',
+    present=["https://example.com/js-replace"], desc="location.replace")
+add("missed/js-window-open", '<script>window.open("https://example.com/js-popup");</script>',
+    present=["https://example.com/js-popup"], desc="window.open")
+add("missed/js-array", '<script>const urls = ["https://example.com/one", "https://example.com/two"];</script>',
+    present=["https://example.com/one", "https://example.com/two"], desc="static JS array")
+add("missed/js-inline-onclick", '<a onclick="location.href=\'https://example.com/js-onclick\'">x</a>',
+    present=["https://example.com/js-onclick"], desc="inline onclick handler")
+add("missed/js-escaped", '<script>const url = "https:\\/\\/example.com\\/js-escaped";</script>',
+    present=["https://example.com/js-escaped"], desc="escaped JS URL (backslash-slash)")
+
+# -- 5. CSS and structured data --
+add("missed/css-url", '<div style=\'background-image: url("https://example.com/banner.jpg")\'></div>',
+    present=["https://example.com/banner.jpg"], desc="CSS url()")
+add("missed/css-import", '<style>@import url("https://example.com/style.css");</style>',
+    present=["https://example.com/style.css"], desc="CSS @import")
+add("missed/css-font", '<style>@font-face { src: url("https://example.com/font.woff2"); }</style>',
+    present=["https://example.com/font.woff2"], desc="@font-face src")
+add("missed/json-ld",
+    '<script type="application/ld+json">{"url":"https://example.com/ld-page","sameAs":["https://example.org/ld-a"]}</script>',
+    present=["https://example.com/ld-page", "https://example.org/ld-a"], desc="JSON-LD structured data")
+add("missed/data-attr", '<div data-url="https://example.com/data-page" data-href="https://example.org/data-page"></div>',
+    present=["https://example.com/data-page", "https://example.org/data-page"], desc="data-* custom attributes")
+
+# -- 6. SVG and less-common attributes --
+add("missed/svg-href", '<svg><a href="https://example.com/svg-a">Link</a></svg>',
+    present=["https://example.com/svg-a"], desc="SVG <a href>")
+add("missed/svg-xlink", '<svg><use xlink:href="https://example.com/icon.svg#icon"></use></svg>',
+    presentAny=[any_group("https://example.com/icon.svg#icon", "https://example.com/icon.svg")],
+    desc="SVG xlink:href")
+add("missed/area-href", '<map><area href="https://example.com/region"></map>',
+    present=["https://example.com/region"], desc="image-map area href")
+add("missed/script-src", '<script src="https://example.com/app.js"></script>',
+    present=["https://example.com/app.js"], desc="script src")
+add("missed/input-image-src", '<input type="image" src="https://example.com/button.png">',
+    present=["https://example.com/button.png"], desc="input type=image src")
+add("missed/lazy-data-src", '<img data-src="https://example.com/lazy.jpg">',
+    present=["https://example.com/lazy.jpg"], desc="lazy-loaded data-src")
+
+# -- 8. Encoding, special schemes and boundary cases --
+add("missed/entity-amp", '<a href="https://example.com/search?a=1&amp;b=2">x</a>',
+    present=["https://example.com/search?a=1&b=2"], desc="HTML entity &amp; decoded")
+add("missed/unicode-escaped-js", '<script>var u = "\\u0068\\u0074\\u0074\\u0070\\u0073://example.com/uni";</script>',
+    info=True, desc="unicode-escaped JS URL (needs \\u decode)")
+add("missed/percent-encoded-string", "<p>https%3A%2F%2Fexample.com%2Fpct-login</p>",
+    info=True, desc="percent-encoded URL string")
+add("missed/fragment-only", '<a href="#section">x</a>', info=True, desc="fragment-only reference")
+add("missed/scheme-mailto", '<a href="mailto:user@example.com">x</a>', info=True, desc="mailto scheme")
+add("missed/scheme-tel", '<a href="tel:+911234567890">x</a>', info=True, desc="tel scheme")
+add("missed/scheme-javascript", '<a href="javascript:alert(1)">x</a>', info=True, desc="javascript scheme")
+add("missed/scheme-data", '<img src="data:image/png;base64,iVBORw0KGgo=">', info=True, desc="data URL")
+add("missed/scheme-blob", '<a href="blob:https://example.com/uuid">x</a>', info=True, desc="blob URL")
+
+# -- 9. DOM and nested-content boundaries --
+add("missed/js-generated-dom", '<script>document.body.innerHTML = \'<a href="https://example.com/dynamic">\';</script>',
+    info=True, desc="JS-generated DOM (needs execution)")
+add("missed/template", '<template><a href="https://example.com/template">x</a></template>',
+    present=["https://example.com/template"], desc="template content")
+add("missed/noscript", '<noscript><a href="https://example.com/noscript">x</a></noscript>',
+    present=["https://example.com/noscript"], desc="noscript content")
+add("missed/hidden-attr", '<a hidden href="https://example.com/hidden-attr">x</a>',
+    present=["https://example.com/hidden-attr"], desc="hidden attribute")
+add("missed/css-hidden", '<div style="display:none"><a href="https://example.com/css-hidden">x</a></div>',
+    present=["https://example.com/css-hidden"], desc="CSS display:none content")
+# NOTE: §7 (HTTP redirects, relative Location, Link header, Content-Location, Refresh response header)
+# and Shadow-DOM / recursive-iframe are NOT represented here — they need response headers / real 30x /
+# JS execution / second-level fetch, which GitHub Pages + first-level scope can't exercise.
+
 out = {
     "_readme": "Webpage URL-extraction sanity cases (GitHub Pages). Built by build_cases.py. "
                "Organised as single/ (one URL per type), combined/ (edge types mixed), bulk/ "
