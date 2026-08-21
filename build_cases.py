@@ -131,6 +131,26 @@ add("relative/fragment", A("/page#section1"),    presentTmpl=["{ORIGIN}/page#sec
 add("relative/meta-refresh", '<meta http-equiv="refresh" content="5;url=next">',
     presentTmpl=["{BASE}/%s/relative/next" % VER], desc="meta-refresh path-relative target")
 
+# Exhaustive dot-segment resolution with NO base — resolved against the serving URL
+# ({BASE}/<VER>/relative/deep-dot-segments.html). ../ -> {BASE}/<VER> ; ../../ -> {BASE} ; ../../../ -> {ORIGIN}.
+_deep = [
+    ("../a1",            "{BASE}/%s/a1" % VER),
+    ("../../a2",         "{BASE}/a2"),
+    ("../../../a3",      "{ORIGIN}/a3"),
+    ("../../../../a4",   "{ORIGIN}/a4"),                       # over-pop clamps at origin root
+    ("./a5",             "{BASE}/%s/relative/a5" % VER),
+    ("b/../a6",          "{BASE}/%s/relative/a6" % VER),
+    ("x/y/../../a7",     "{BASE}/%s/relative/a7" % VER),
+    ("/a8",              "{ORIGIN}/a8"),                       # root-relative
+    ("/./a9",            "{ORIGIN}/a9"),
+    ("/../a10",          "{ORIGIN}/a10"),                      # clamp
+    (".././a11",         "{BASE}/%s/a11" % VER),
+]
+add("relative/deep-dot-segments",
+    section("no-base relative — resolved vs serving URL", [A(ref, ref) for ref, _ in _deep]),
+    presentTmpl=[resolved for _, resolved in _deep],
+    desc="every ./ and ../ combination with no base (serving-URL resolution)")
+
 # ══════════════════════════════════════════════════════════════════════════════════════════
 # 7a. LOCATION — same valid URL in different HTML locations. Must be extracted (assert present).
 # ══════════════════════════════════════════════════════════════════════════════════════════
@@ -337,6 +357,34 @@ base_page("base-relative/absolute-override", "https://example.com/dir/", [
     ("ftp://external.com/file.txt", "ftp://external.com/file.txt"),
     ("//cdn.example.com/x",         "https://cdn.example.com/x"),
 ], "anchors overriding the base (own scheme / protocol-relative)")
+
+# Exhaustive dot-segment resolution against a DEEP absolute base (a/b/c/d/e/) — every ./ ../ combo.
+base_page("base-relative/deep-dot-segments", "https://example.com/a/b/c/d/e/", [
+    ("f1",                       "https://example.com/a/b/c/d/e/f1"),
+    ("./f2",                     "https://example.com/a/b/c/d/e/f2"),
+    ("../f3",                    "https://example.com/a/b/c/d/f3"),
+    ("../../f4",                 "https://example.com/a/b/c/f4"),
+    ("../../../f5",              "https://example.com/a/b/f5"),
+    ("../../../../f6",           "https://example.com/a/f6"),
+    ("../../../../../f7",        "https://example.com/f7"),
+    ("../../../../../../f8",     "https://example.com/f8"),        # over-pop clamps at root
+    (".././f9",                  "https://example.com/a/b/c/d/f9"),
+    ("x/../f10",                 "https://example.com/a/b/c/d/e/f10"),
+    ("x/y/../../f11",            "https://example.com/a/b/c/d/e/f11"),
+    ("/g1",                      "https://example.com/g1"),        # root-relative discards base path
+    ("/./g2",                    "https://example.com/g2"),
+    ("/../g3",                   "https://example.com/g3"),        # clamp at root
+    ("/a/../g4",                 "https://example.com/g4"),
+], "every ./ and ../ combination against a deep base")
+
+# Subdomain base + relatives (host with multiple labels is preserved; protocol-relative to another sub).
+base_page("base-relative/subdomain", "https://a1.b2.c3.example.com/p/q/", [
+    ("r1",                          "https://a1.b2.c3.example.com/p/q/r1"),
+    ("../r2",                       "https://a1.b2.c3.example.com/p/r2"),
+    ("../../r3",                    "https://a1.b2.c3.example.com/r3"),
+    ("/r4",                         "https://a1.b2.c3.example.com/r4"),
+    ("//cdn.assets.example.com/r5", "https://cdn.assets.example.com/r5"),
+], "multi-label subdomain base + relative / protocol-relative to another subdomain")
 
 # multiple <base> tags: first valid wins
 add("base-relative/multiple-base",

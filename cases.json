@@ -492,6 +492,32 @@
       "info": false
     },
     {
+      "id": "relative_deep-dot-segments",
+      "desc": "every ./ and ../ combination with no base (serving-URL resolution)",
+      "mailPath": "v1/relative/deep-dot-segments.html",
+      "page": {
+        "path": "v1/relative/deep-dot-segments.html",
+        "html": "<h3>no-base relative — resolved vs serving URL</h3>\n<a href=\"../a1\">../a1</a>\n<br><br>\n<a href=\"../../a2\">../../a2</a>\n<br><br>\n<a href=\"../../../a3\">../../../a3</a>\n<br><br>\n<a href=\"../../../../a4\">../../../../a4</a>\n<br><br>\n<a href=\"./a5\">./a5</a>\n<br><br>\n<a href=\"b/../a6\">b/../a6</a>\n<br><br>\n<a href=\"x/y/../../a7\">x/y/../../a7</a>\n<br><br>\n<a href=\"/a8\">/a8</a>\n<br><br>\n<a href=\"/./a9\">/./a9</a>\n<br><br>\n<a href=\"/../a10\">/../a10</a>\n<br><br>\n<a href=\".././a11\">.././a11</a>"
+      },
+      "present": [],
+      "presentTemplate": [
+        "{BASE}/v1/a1",
+        "{BASE}/a2",
+        "{ORIGIN}/a3",
+        "{ORIGIN}/a4",
+        "{BASE}/v1/relative/a5",
+        "{BASE}/v1/relative/a6",
+        "{BASE}/v1/relative/a7",
+        "{ORIGIN}/a8",
+        "{ORIGIN}/a9",
+        "{ORIGIN}/a10",
+        "{BASE}/v1/a11"
+      ],
+      "presentAny": [],
+      "absent": [],
+      "info": false
+    },
+    {
       "id": "location_img-src",
       "desc": "URL in <img src>",
       "mailPath": "v1/location/img-src.html",
@@ -1249,6 +1275,56 @@
       "present": [
         "ftp://external.com/file.txt",
         "https://cdn.example.com/x"
+      ],
+      "presentTemplate": [],
+      "presentAny": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "base-relative_deep-dot-segments",
+      "desc": "every ./ and ../ combination against a deep base",
+      "mailPath": "v1/base-relative/deep-dot-segments.html",
+      "page": {
+        "path": "v1/base-relative/deep-dot-segments.html",
+        "html": "<h3>base = https://example.com/a/b/c/d/e/</h3>\n<base href=\"https://example.com/a/b/c/d/e/\" target=\"_blank\">\n<br><br>\n<a href=\"f1\">f1</a>\n<br><br>\n<a href=\"./f2\">./f2</a>\n<br><br>\n<a href=\"../f3\">../f3</a>\n<br><br>\n<a href=\"../../f4\">../../f4</a>\n<br><br>\n<a href=\"../../../f5\">../../../f5</a>\n<br><br>\n<a href=\"../../../../f6\">../../../../f6</a>\n<br><br>\n<a href=\"../../../../../f7\">../../../../../f7</a>\n<br><br>\n<a href=\"../../../../../../f8\">../../../../../../f8</a>\n<br><br>\n<a href=\".././f9\">.././f9</a>\n<br><br>\n<a href=\"x/../f10\">x/../f10</a>\n<br><br>\n<a href=\"x/y/../../f11\">x/y/../../f11</a>\n<br><br>\n<a href=\"/g1\">/g1</a>\n<br><br>\n<a href=\"/./g2\">/./g2</a>\n<br><br>\n<a href=\"/../g3\">/../g3</a>\n<br><br>\n<a href=\"/a/../g4\">/a/../g4</a>"
+      },
+      "present": [
+        "https://example.com/a/b/c/d/e/f1",
+        "https://example.com/a/b/c/d/e/f2",
+        "https://example.com/a/b/c/d/f3",
+        "https://example.com/a/b/c/f4",
+        "https://example.com/a/b/f5",
+        "https://example.com/a/f6",
+        "https://example.com/f7",
+        "https://example.com/f8",
+        "https://example.com/a/b/c/d/f9",
+        "https://example.com/a/b/c/d/e/f10",
+        "https://example.com/a/b/c/d/e/f11",
+        "https://example.com/g1",
+        "https://example.com/g2",
+        "https://example.com/g3",
+        "https://example.com/g4"
+      ],
+      "presentTemplate": [],
+      "presentAny": [],
+      "absent": [],
+      "info": false
+    },
+    {
+      "id": "base-relative_subdomain",
+      "desc": "multi-label subdomain base + relative / protocol-relative to another subdomain",
+      "mailPath": "v1/base-relative/subdomain.html",
+      "page": {
+        "path": "v1/base-relative/subdomain.html",
+        "html": "<h3>base = https://a1.b2.c3.example.com/p/q/</h3>\n<base href=\"https://a1.b2.c3.example.com/p/q/\" target=\"_blank\">\n<br><br>\n<a href=\"r1\">r1</a>\n<br><br>\n<a href=\"../r2\">../r2</a>\n<br><br>\n<a href=\"../../r3\">../../r3</a>\n<br><br>\n<a href=\"/r4\">/r4</a>\n<br><br>\n<a href=\"//cdn.assets.example.com/r5\">//cdn.assets.example.com/r5</a>"
+      },
+      "present": [
+        "https://a1.b2.c3.example.com/p/q/r1",
+        "https://a1.b2.c3.example.com/p/r2",
+        "https://a1.b2.c3.example.com/r3",
+        "https://a1.b2.c3.example.com/r4",
+        "https://cdn.assets.example.com/r5"
       ],
       "presentTemplate": [],
       "presentAny": [],

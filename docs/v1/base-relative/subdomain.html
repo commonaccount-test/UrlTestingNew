@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>base-relative_subdomain</title>
+</head>
+<body>
+<h3>base = https://a1.b2.c3.example.com/p/q/</h3>
+<base href="https://a1.b2.c3.example.com/p/q/" target="_blank">
+<br><br>
+<a href="r1">r1</a>
+<br><br>
+<a href="../r2">../r2</a>
+<br><br>
+<a href="../../r3">../../r3</a>
+<br><br>
+<a href="/r4">/r4</a>
+<br><br>
+<a href="//cdn.assets.example.com/r5">//cdn.assets.example.com/r5</a>
+</body>
+</html>

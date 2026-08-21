@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>base-relative_deep-dot-segments</title>
+</head>
+<body>
+<h3>base = https://example.com/a/b/c/d/e/</h3>
+<base href="https://example.com/a/b/c/d/e/" target="_blank">
+<br><br>
+<a href="f1">f1</a>
+<br><br>
+<a href="./f2">./f2</a>
+<br><br>
+<a href="../f3">../f3</a>
+<br><br>
+<a href="../../f4">../../f4</a>
+<br><br>
+<a href="../../../f5">../../../f5</a>
+<br><br>
+<a href="../../../../f6">../../../../f6</a>
+<br><br>
+<a href="../../../../../f7">../../../../../f7</a>
+<br><br>
+<a href="../../../../../../f8">../../../../../../f8</a>
+<br><br>
+<a href=".././f9">.././f9</a>
+<br><br>
+<a href="x/../f10">x/../f10</a>
+<br><br>
+<a href="x/y/../../f11">x/y/../../f11</a>
+<br><br>
+<a href="/g1">/g1</a>
+<br><br>
+<a href="/./g2">/./g2</a>
+<br><br>
+<a href="/../g3">/../g3</a>
+<br><br>
+<a href="/a/../g4">/a/../g4</a>
+</body>
+</html>
