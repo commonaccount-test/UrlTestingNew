@@ -492,11 +492,11 @@
       "info": false
     },
     {
-      "id": "relative_deep-dot-segments",
+      "id": "relative_deep-dot-segments-2",
       "desc": "every ./ and ../ combination with no base (serving-URL resolution)",
-      "mailPath": "v1/relative/deep-dot-segments.html",
+      "mailPath": "v1/relative/deep-dot-segments-2.html",
       "page": {
-        "path": "v1/relative/deep-dot-segments.html",
+        "path": "v1/relative/deep-dot-segments-2.html",
         "html": "<h3>no-base relative — resolved vs serving URL</h3>\n<a href=\"../a1\">../a1</a>\n<br><br>\n<a href=\"../../a2\">../../a2</a>\n<br><br>\n<a href=\"../../../a3\">../../../a3</a>\n<br><br>\n<a href=\"../../../../a4\">../../../../a4</a>\n<br><br>\n<a href=\"./a5\">./a5</a>\n<br><br>\n<a href=\"b/../a6\">b/../a6</a>\n<br><br>\n<a href=\"x/y/../../a7\">x/y/../../a7</a>\n<br><br>\n<a href=\"/a8\">/a8</a>\n<br><br>\n<a href=\"/./a9\">/./a9</a>\n<br><br>\n<a href=\"/../a10\">/../a10</a>\n<br><br>\n<a href=\".././a11\">.././a11</a>"
       },
       "present": [],
@@ -1282,11 +1282,11 @@
       "info": false
     },
     {
-      "id": "base-relative_deep-dot-segments",
+      "id": "base-relative_deep-dot-segments-2",
       "desc": "every ./ and ../ combination against a deep base",
-      "mailPath": "v1/base-relative/deep-dot-segments.html",
+      "mailPath": "v1/base-relative/deep-dot-segments-2.html",
       "page": {
-        "path": "v1/base-relative/deep-dot-segments.html",
+        "path": "v1/base-relative/deep-dot-segments-2.html",
         "html": "<h3>base = https://example.com/a/b/c/d/e/</h3>\n<base href=\"https://example.com/a/b/c/d/e/\" target=\"_blank\">\n<br><br>\n<a href=\"f1\">f1</a>\n<br><br>\n<a href=\"./f2\">./f2</a>\n<br><br>\n<a href=\"../f3\">../f3</a>\n<br><br>\n<a href=\"../../f4\">../../f4</a>\n<br><br>\n<a href=\"../../../f5\">../../../f5</a>\n<br><br>\n<a href=\"../../../../f6\">../../../../f6</a>\n<br><br>\n<a href=\"../../../../../f7\">../../../../../f7</a>\n<br><br>\n<a href=\"../../../../../../f8\">../../../../../../f8</a>\n<br><br>\n<a href=\".././f9\">.././f9</a>\n<br><br>\n<a href=\"x/../f10\">x/../f10</a>\n<br><br>\n<a href=\"x/y/../../f11\">x/y/../../f11</a>\n<br><br>\n<a href=\"/g1\">/g1</a>\n<br><br>\n<a href=\"/./g2\">/./g2</a>\n<br><br>\n<a href=\"/../g3\">/../g3</a>\n<br><br>\n<a href=\"/a/../g4\">/a/../g4</a>"
       },
       "present": [
@@ -1312,11 +1312,11 @@
       "info": false
     },
     {
-      "id": "base-relative_subdomain",
+      "id": "base-relative_subdomain-2",
       "desc": "multi-label subdomain base + relative / protocol-relative to another subdomain",
-      "mailPath": "v1/base-relative/subdomain.html",
+      "mailPath": "v1/base-relative/subdomain-2.html",
       "page": {
-        "path": "v1/base-relative/subdomain.html",
+        "path": "v1/base-relative/subdomain-2.html",
         "html": "<h3>base = https://a1.b2.c3.example.com/p/q/</h3>\n<base href=\"https://a1.b2.c3.example.com/p/q/\" target=\"_blank\">\n<br><br>\n<a href=\"r1\">r1</a>\n<br><br>\n<a href=\"../r2\">../r2</a>\n<br><br>\n<a href=\"../../r3\">../../r3</a>\n<br><br>\n<a href=\"/r4\">/r4</a>\n<br><br>\n<a href=\"//cdn.assets.example.com/r5\">//cdn.assets.example.com/r5</a>"
       },
       "present": [

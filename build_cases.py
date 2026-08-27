@@ -146,7 +146,7 @@ _deep = [
     ("/../a10",          "{ORIGIN}/a10"),                      # clamp
     (".././a11",         "{BASE}/%s/a11" % VER),
 ]
-add("relative/deep-dot-segments",
+add("relative/deep-dot-segments-2",
     section("no-base relative — resolved vs serving URL", [A(ref, ref) for ref, _ in _deep]),
     presentTmpl=[resolved for _, resolved in _deep],
     desc="every ./ and ../ combination with no base (serving-URL resolution)")
@@ -359,7 +359,7 @@ base_page("base-relative/absolute-override", "https://example.com/dir/", [
 ], "anchors overriding the base (own scheme / protocol-relative)")
 
 # Exhaustive dot-segment resolution against a DEEP absolute base (a/b/c/d/e/) — every ./ ../ combo.
-base_page("base-relative/deep-dot-segments", "https://example.com/a/b/c/d/e/", [
+base_page("base-relative/deep-dot-segments-2", "https://example.com/a/b/c/d/e/", [
     ("f1",                       "https://example.com/a/b/c/d/e/f1"),
     ("./f2",                     "https://example.com/a/b/c/d/e/f2"),
     ("../f3",                    "https://example.com/a/b/c/d/f3"),
@@ -378,7 +378,7 @@ base_page("base-relative/deep-dot-segments", "https://example.com/a/b/c/d/e/", [
 ], "every ./ and ../ combination against a deep base")
 
 # Subdomain base + relatives (host with multiple labels is preserved; protocol-relative to another sub).
-base_page("base-relative/subdomain", "https://a1.b2.c3.example.com/p/q/", [
+base_page("base-relative/subdomain-2", "https://a1.b2.c3.example.com/p/q/", [
     ("r1",                          "https://a1.b2.c3.example.com/p/q/r1"),
     ("../r2",                       "https://a1.b2.c3.example.com/p/r2"),
     ("../../r3",                    "https://a1.b2.c3.example.com/r3"),
