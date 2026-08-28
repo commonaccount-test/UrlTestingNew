@@ -194,6 +194,9 @@ add("representation/idn-nonlatin", A("https://例え.テスト"),
 add("representation/idn-mixed", A("https://例え.xn--p1ai"),
     presentAny=[any_group("https://例え.xn--p1ai", "https://" + (puny("例え.xn--p1ai") or ""))],
     desc="unicode + punycode label")
+add("representation/idn-cyrillic", A("https://пример.рф"),
+    presentAny=[any_group("https://пример.рф", "https://" + (puny("пример.рф") or ""))],
+    desc="Cyrillic IDN domain (unicode or punycode)")
 # Unicode in path / query — accept raw OR percent-encoded
 add("representation/unicode-path", "<p>https://example.com/日本語</p>",
     presentAny=[any_group("https://example.com/日本語", "https://example.com/" + pct("日本語"))],

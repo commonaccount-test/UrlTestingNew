@@ -740,6 +740,25 @@
       "info": false
     },
     {
+      "id": "representation_idn-cyrillic",
+      "desc": "Cyrillic IDN domain (unicode or punycode)",
+      "mailPath": "v1/representation/idn-cyrillic.html",
+      "page": {
+        "path": "v1/representation/idn-cyrillic.html",
+        "html": "<a href=\"https://пример.рф\">link</a>"
+      },
+      "present": [],
+      "presentTemplate": [],
+      "presentAny": [
+        [
+          "https://пример.рф",
+          "https://xn--e1afmkfd.xn--p1ai"
+        ]
+      ],
+      "absent": [],
+      "info": false
+    },
+    {
       "id": "representation_unicode-path",
       "desc": "unicode path",
       "mailPath": "v1/representation/unicode-path.html",
