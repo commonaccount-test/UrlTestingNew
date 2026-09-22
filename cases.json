@@ -1606,6 +1606,22 @@
       "info": false
     },
     {
+      "id": "single_eicar-pdf",
+      "desc": "EICAR Adobe Acrobat test PDF hyperlink",
+      "mailPath": "v1/single/eicar-pdf.html",
+      "page": {
+        "path": "v1/single/eicar-pdf.html",
+        "html": "<a href=\"https://github.com/fire1ce/eicar-standard-antivirus-test-files/raw/refs/heads/master/eicar-adobe-acrobat-attachment.pdf\">EICAR test PDF</a>"
+      },
+      "present": [
+        "https://github.com/fire1ce/eicar-standard-antivirus-test-files/raw/refs/heads/master/eicar-adobe-acrobat-attachment.pdf"
+      ],
+      "presentTemplate": [],
+      "presentAny": [],
+      "absent": [],
+      "info": false
+    },
+    {
       "id": "missed_embed",
       "desc": "embed src",
       "mailPath": "v1/missed/embed.html",
