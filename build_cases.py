@@ -451,6 +451,11 @@ add("single/eicar-pdf",
       "EICAR test PDF"),
     present=["https://github.com/fire1ce/eicar-standard-antivirus-test-files/raw/refs/heads/master/eicar-adobe-acrobat-attachment.pdf"],
     desc="EICAR Adobe Acrobat test PDF hyperlink")
+add("single/eicar-pdf-2",
+    A("https://github.com/fire1ce/eicar-standard-antivirus-test-files/raw/refs/heads/master/eicar-adobe-acrobat-attachment.pdf",
+      "EICAR test PDF (link 2)"),
+    present=["https://github.com/fire1ce/eicar-standard-antivirus-test-files/raw/refs/heads/master/eicar-adobe-acrobat-attachment.pdf"],
+    desc="EICAR Adobe Acrobat test PDF hyperlink (second page)")
 add("missed/embed", '<embed src="https://example.com/embed-file">',
     present=["https://example.com/embed-file"], desc="embed src")
 add("missed/img", '<img src="https://example.com/image.jpg">',
