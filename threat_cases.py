@@ -25,7 +25,7 @@ Usage:
     python3 threat_cases.py --base https://host   # override deploy base used in the emitted properties
     python3 threat_cases.py --out docs            # output dir (default: docs)
 """
-import argparse, io, json, os, sys, zipfile
+import argparse, base64, io, json, os, sys, zipfile
 from urllib.parse import quote
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -74,7 +74,11 @@ def U(cid, hint, desc, verdict):
     user.append((cid, hint, desc, verdict))
 
 
-def build():
+def build(base):
+    # Canonical hosted phishing landing on OUR site + absolute forms used by the self-hosted funnel below.
+    LANDING = base + "/" + ROOT + "/phish-landing.html"
+    LANDING_NOSCHEME = LANDING.split("://", 1)[-1]
+    encL = quote(LANDING, safe="")
     # ═══ A. Direct malicious links (GH) ═════════════════════════════════════════════════════════════
     page("eicar-link", "EICAR link", '<p><a href="%s">EICAR AV test file</a></p>' % EICAR,
          verdict="MALICIOUS", desc="anchor to the EICAR AV test file")
@@ -251,6 +255,42 @@ def build():
          'after delivery to test time-of-click re-scan.</p>', verdict="CLEAN", entry=False,
          desc="time-of-click: benign at delivery; edit later (USER)")
 
+    # ═══ M. Self-hosted LIVE phishing funnel — one hosted landing + redirectors that all point to it ═══
+    login = ('<h2>Sign in to your account</h2>\n<form action="#" onsubmit="return false">\n'
+             'Email <input name="u"><br>Password <input type="password" name="p"><br>'
+             '<button>Sign in</button>\n</form>')
+    page("phish-landing", "Sign in", login, verdict="PHISHING",
+         desc="canonical hosted phishing landing page (the phishing link)")
+
+    page("lp-open-redirect", "open redirect (?url=)",
+         '<script>var u=new URLSearchParams(location.search).get("url");if(u)location.href=u;</script>',
+         verdict="PHISHING", desc="self-hosted open redirect ?url= -> hosted phishing landing",
+         entry_query="?url=" + encL)
+    page("lp-next", "next carrier (?next=)",
+         '<script>var u=new URLSearchParams(location.search).get("next");if(u)location.href=u;</script>',
+         verdict="PHISHING", desc="self-hosted ?next= carrier -> hosted phishing landing",
+         entry_query="?next=" + encL)
+    page("lp-url-q", "url?q= carrier",
+         '<script>var u=new URLSearchParams(location.search).get("q");if(u)location.href=u;</script>',
+         verdict="PHISHING", desc="self-hosted ?q= carrier (google-url style) -> hosted phishing landing",
+         entry_query="?q=" + encL)
+    b64 = base64.b64encode(LANDING.encode()).decode()
+    page("lp-b64", "base64 carrier (?u=)",
+         '<script>var u=new URLSearchParams(location.search).get("u");if(u)location.href=atob(u);</script>',
+         verdict="PHISHING", desc="self-hosted base64 ?u= carrier -> hosted phishing landing",
+         entry_query="?u=" + quote(b64, safe=""))
+    for sc in ["a1", "b2", "c3"]:
+        head, body = meta_js_redirect(LANDING)
+        page("lp/" + sc, "short " + sc, body, head=head, verdict="PHISHING",
+             desc="self-hosted short link -> hosted phishing landing")
+    for i in range(1, 4):
+        target = LANDING if i == 3 else bn("%s/lp-chain-%d.html" % (ROOT, i + 1))
+        head, body = meta_js_redirect(target)
+        page("lp-chain-%d" % i, "chain hop %d" % i, body, head=head,
+             verdict=("PHISHING" if i == 1 else None),
+             desc=("self-hosted 3-hop chain -> hosted phishing landing" if i == 1 else "chain hop"),
+             entry=(i == 1))
+
     # ═══════════════════════════ REAL external standard resources ═══════════════════════════════════
     # httpbin — real 30x / status / delay / auth (what GitHub Pages cannot do)
     R("real_httpbin_redir5",  "https://httpbin.org/redirect/5",  "real 5-hop 30x chain (benign end)", "CLEAN")
@@ -289,7 +329,55 @@ def build():
     R("real_ssrf_loopback", "http://127.0.0.1/", "loopback (must-not-fetch)", "CLEAN")
     R("real_ssrf_metadata", "http://169.254.169.254/latest/meta-data/", "cloud metadata (must-not-fetch)", "CLEAN")
 
+    # ═══ Trusted-domain wrappers / redirectors — visible host is a big brand; real dest one hop down ═══
+    # The engine must recognise the wrapper, follow to the true destination, and evaluate THAT — not the
+    # trusted wrapper domain (see Email_URL_Attack_Surface.md §3 / Resolution Rules §4).
+    enc  = quote(SB_PHISH, safe="")
+    encE = quote(EICAR, safe="")
+    ph_host, ph_path = "testsafebrowsing.appspot.com", "/s/phishing.html"
+
+    # -- Google-family (these actually resolve to the phishing page) --
+    R("wrap_google_url_q",     "https://www.google.com/url?q=" + enc,          "google.com/url?q= -> phishing", "PHISHING")
+    R("wrap_google_url_sa",    "https://www.google.com/url?sa=t&url=" + enc,   "google.com/url?sa=t&url= -> phishing", "PHISHING")
+    R("wrap_google_url_eicar", "https://www.google.com/url?q=" + encE,         "google.com/url?q= -> EICAR", "MALICIOUS")
+    R("wrap_google_amp",       "https://www.google.com/amp/s/" + ph_host + ph_path, "google AMP viewer -> phishing", "PHISHING")
+    R("wrap_amp_cache",        "https://cdn.ampproject.org/c/s/" + ph_host + ph_path, "AMP cache -> phishing", "PHISHING")
+    R("wrap_google_translate", "https://translate.google.com/translate?sl=en&tl=es&u=" + enc, "translate proxy -> phishing", "PHISHING")
+    R("wrap_translate_goog",   "https://testsafebrowsing-appspot-com.translate.goog" + ph_path
+                               + "?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=en", "translate.goog proxy -> phishing", "PHISHING")
+    R("wrap_appspot_hosting",  SB_PHISH, "Google App Engine hosting (appspot.com) phishing page", "PHISHING")
+    R("wrap_youtube_redirect", "https://www.youtube.com/redirect?q=" + enc,    "youtube.com open redirect -> phishing", "PHISHING")
+    # Google real endpoints wrapping OUR hosted phishing landing (uses the phishing link, resolves live)
+    R("wrap_google_url_q_landing", "https://www.google.com/url?q=" + encL,     "google.com/url?q= -> hosted phishing landing", "PHISHING")
+    R("wrap_google_amp_landing",   "https://www.google.com/amp/s/" + LANDING_NOSCHEME, "google AMP viewer -> hosted phishing landing", "PHISHING")
+
+    # -- Microsoft / other-vendor link wrappers (recognition probes; may not resolve without a real tenant) --
+    R("wrap_ms_safelink",  "https://nam01.safelinks.protection.outlook.com/?url=" + enc + "&data=qa",
+      "MS Safelinks wrapper -> phishing (recognise+unwrap)", "PHISHING")
+    R("wrap_proofpoint",   "https://urldefense.com/v3/__" + SB_PHISH + "__;!!QA!!",
+      "Proofpoint urldefense double-wrap -> phishing (re-evaluate inner)", "PHISHING")
+    R("wrap_mimecast",     "https://protect-us.mimecast.com/s/qa?domain=" + ph_host,
+      "Mimecast wrapper -> phishing (re-evaluate inner)", "PHISHING")
+    R("wrap_barracuda",    "https://linkprotect.cudasvc.com/url?a=" + enc,
+      "Barracuda linkprotect wrapper -> phishing", "PHISHING")
+
+    # -- Nested carriers: phishing URL in query / fragment / base64 of an otherwise-trusted URL --
+    R("wrap_query_next",   "https://example.com/?next=" + enc,   "phishing URL in ?next= query param", "PHISHING")
+    R("wrap_fragment",     "https://example.com/#" + enc,        "phishing URL in #fragment", "PHISHING")
+
     # ═══════════════════════════ USER — manual setup (documented, not auto-run) ══════════════════════
+    # Google-family HOSTING (needs a benign phishing sim actually created on the brand domain, then capture URL)
+    U("wrap_google_sites",   "https://sites.google.com/view/REPLACE",              "Google Sites page hosting phishing", "PHISHING")
+    U("wrap_google_drive",   "https://drive.google.com/file/d/REPLACE/view",       "Google Drive shared phishing file", "PHISHING")
+    U("wrap_google_docs",    "https://docs.google.com/document/d/REPLACE/edit",    "Google Docs with a phishing link", "PHISHING")
+    U("wrap_google_forms",   "https://docs.google.com/forms/d/REPLACE/viewform",   "Google Forms phishing", "PHISHING")
+    U("wrap_google_script",  "https://script.google.com/macros/s/REPLACE/exec",    "Apps Script redirect to phishing", "PHISHING")
+    U("wrap_google_storage", "https://storage.googleapis.com/REPLACE/phish.html",  "GCS-hosted phishing", "PHISHING")
+    U("wrap_google_ugc",     "https://REPLACE.googleusercontent.com/phish",         "googleusercontent-hosted phishing", "PHISHING")
+    U("wrap_firebase_webapp","https://REPLACE.web.app/phish.html",                 "Firebase-hosted phishing", "PHISHING")
+    U("wrap_ms_sharepoint",  "https://REPLACE.sharepoint.com/:x:/g/REPLACE",       "SharePoint-hosted phishing", "PHISHING")
+    U("wrap_ms_onedrive",    "https://1drv.ms/REPLACE",                            "OneDrive short link -> phishing", "PHISHING")
+    U("wrap_ms_forms",       "https://forms.office.com/r/REPLACE",                 "MS Forms phishing", "PHISHING")
     U("user_shortener_bitly",  "https://bit.ly/REPLACE",     "real bit.ly -> phishing-redirect", "PHISHING")
     U("user_shortener_tinyurl","https://tinyurl.com/REPLACE","real tinyurl -> eicar-drop", "MALICIOUS")
     U("user_shortener_tco",    "https://t.co/REPLACE",       "real t.co -> malware-redirect", "MALICIOUS")
@@ -333,7 +421,7 @@ def main():
     base = args.base.rstrip("/")
     out = os.path.join(HERE, args.out)
 
-    build()
+    build(base)
 
     write_file(os.path.join(out, ".nojekyll"), "")
     for c in cases:

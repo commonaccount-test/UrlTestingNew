@@ -550,6 +550,105 @@
       "verdict": "CLEAN",
       "entry": false,
       "entry_query": ""
+    },
+    {
+      "id": "threat_phish-landing",
+      "desc": "canonical hosted phishing landing page (the phishing link)",
+      "path": "t1/threat/phish-landing.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Sign in</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Sign in</p>\n<h2>Sign in to your account</h2>\n<form action=\"#\" onsubmit=\"return false\">\nEmail <input name=\"u\"><br>Password <input type=\"password\" name=\"p\"><br><button>Sign in</button>\n</form>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_lp-open-redirect",
+      "desc": "self-hosted open redirect ?url= -> hosted phishing landing",
+      "path": "t1/threat/lp-open-redirect.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>open redirect (?url=)</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - open redirect (?url=)</p>\n<script>var u=new URLSearchParams(location.search).get(\"url\");if(u)location.href=u;</script>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": "?url=https%3A%2F%2Fcommonaccount-test.github.io%2FUrlTestingNew%2Ft1%2Fthreat%2Fphish-landing.html"
+    },
+    {
+      "id": "threat_lp-next",
+      "desc": "self-hosted ?next= carrier -> hosted phishing landing",
+      "path": "t1/threat/lp-next.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>next carrier (?next=)</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - next carrier (?next=)</p>\n<script>var u=new URLSearchParams(location.search).get(\"next\");if(u)location.href=u;</script>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": "?next=https%3A%2F%2Fcommonaccount-test.github.io%2FUrlTestingNew%2Ft1%2Fthreat%2Fphish-landing.html"
+    },
+    {
+      "id": "threat_lp-url-q",
+      "desc": "self-hosted ?q= carrier (google-url style) -> hosted phishing landing",
+      "path": "t1/threat/lp-url-q.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>url?q= carrier</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - url?q= carrier</p>\n<script>var u=new URLSearchParams(location.search).get(\"q\");if(u)location.href=u;</script>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": "?q=https%3A%2F%2Fcommonaccount-test.github.io%2FUrlTestingNew%2Ft1%2Fthreat%2Fphish-landing.html"
+    },
+    {
+      "id": "threat_lp-b64",
+      "desc": "self-hosted base64 ?u= carrier -> hosted phishing landing",
+      "path": "t1/threat/lp-b64.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>base64 carrier (?u=)</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - base64 carrier (?u=)</p>\n<script>var u=new URLSearchParams(location.search).get(\"u\");if(u)location.href=atob(u);</script>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": "?u=aHR0cHM6Ly9jb21tb25hY2NvdW50LXRlc3QuZ2l0aHViLmlvL1VybFRlc3RpbmdOZXcvdDEvdGhyZWF0L3BoaXNoLWxhbmRpbmcuaHRtbA%3D%3D"
+    },
+    {
+      "id": "threat_lp_a1",
+      "desc": "self-hosted short link -> hosted phishing landing",
+      "path": "t1/threat/lp/a1.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>short a1</title>\n<meta http-equiv=\"refresh\" content=\"0;url=https://commonaccount-test.github.io/UrlTestingNew/t1/threat/phish-landing.html\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - short a1</p>\n<p>redirecting to <code>https://commonaccount-test.github.io/UrlTestingNew/t1/threat/phish-landing.html</code>...</p>\n<script>setTimeout(function(){location.href='https://commonaccount-test.github.io/UrlTestingNew/t1/threat/phish-landing.html';}, 0);</script>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_lp_b2",
+      "desc": "self-hosted short link -> hosted phishing landing",
+      "path": "t1/threat/lp/b2.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>short b2</title>\n<meta http-equiv=\"refresh\" content=\"0;url=https://commonaccount-test.github.io/UrlTestingNew/t1/threat/phish-landing.html\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - short b2</p>\n<p>redirecting to <code>https://commonaccount-test.github.io/UrlTestingNew/t1/threat/phish-landing.html</code>...</p>\n<script>setTimeout(function(){location.href='https://commonaccount-test.github.io/UrlTestingNew/t1/threat/phish-landing.html';}, 0);</script>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_lp_c3",
+      "desc": "self-hosted short link -> hosted phishing landing",
+      "path": "t1/threat/lp/c3.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>short c3</title>\n<meta http-equiv=\"refresh\" content=\"0;url=https://commonaccount-test.github.io/UrlTestingNew/t1/threat/phish-landing.html\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - short c3</p>\n<p>redirecting to <code>https://commonaccount-test.github.io/UrlTestingNew/t1/threat/phish-landing.html</code>...</p>\n<script>setTimeout(function(){location.href='https://commonaccount-test.github.io/UrlTestingNew/t1/threat/phish-landing.html';}, 0);</script>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_lp-chain-1",
+      "desc": "self-hosted 3-hop chain -> hosted phishing landing",
+      "path": "t1/threat/lp-chain-1.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>chain hop 1</title>\n<meta http-equiv=\"refresh\" content=\"0;url=lp-chain-2.html\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - chain hop 1</p>\n<p>redirecting to <code>lp-chain-2.html</code>...</p>\n<script>setTimeout(function(){location.href='lp-chain-2.html';}, 0);</script>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_lp-chain-2",
+      "desc": "chain hop",
+      "path": "t1/threat/lp-chain-2.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>chain hop 2</title>\n<meta http-equiv=\"refresh\" content=\"0;url=lp-chain-3.html\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - chain hop 2</p>\n<p>redirecting to <code>lp-chain-3.html</code>...</p>\n<script>setTimeout(function(){location.href='lp-chain-3.html';}, 0);</script>\n</body>\n</html>\n",
+      "verdict": null,
+      "entry": false,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_lp-chain-3",
+      "desc": "chain hop",
+      "path": "t1/threat/lp-chain-3.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>chain hop 3</title>\n<meta http-equiv=\"refresh\" content=\"0;url=https://commonaccount-test.github.io/UrlTestingNew/t1/threat/phish-landing.html\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - chain hop 3</p>\n<p>redirecting to <code>https://commonaccount-test.github.io/UrlTestingNew/t1/threat/phish-landing.html</code>...</p>\n<script>setTimeout(function(){location.href='https://commonaccount-test.github.io/UrlTestingNew/t1/threat/phish-landing.html';}, 0);</script>\n</body>\n</html>\n",
+      "verdict": null,
+      "entry": false,
+      "entry_query": ""
     }
   ],
   "real": [
@@ -750,9 +849,177 @@
       "http://169.254.169.254/latest/meta-data/",
       "cloud metadata (must-not-fetch)",
       "CLEAN"
+    ],
+    [
+      "wrap_google_url_q",
+      "https://www.google.com/url?q=https%3A%2F%2Ftestsafebrowsing.appspot.com%2Fs%2Fphishing.html",
+      "google.com/url?q= -> phishing",
+      "PHISHING"
+    ],
+    [
+      "wrap_google_url_sa",
+      "https://www.google.com/url?sa=t&url=https%3A%2F%2Ftestsafebrowsing.appspot.com%2Fs%2Fphishing.html",
+      "google.com/url?sa=t&url= -> phishing",
+      "PHISHING"
+    ],
+    [
+      "wrap_google_url_eicar",
+      "https://www.google.com/url?q=https%3A%2F%2Fsecure.eicar.org%2Feicar.com.txt",
+      "google.com/url?q= -> EICAR",
+      "MALICIOUS"
+    ],
+    [
+      "wrap_google_amp",
+      "https://www.google.com/amp/s/testsafebrowsing.appspot.com/s/phishing.html",
+      "google AMP viewer -> phishing",
+      "PHISHING"
+    ],
+    [
+      "wrap_amp_cache",
+      "https://cdn.ampproject.org/c/s/testsafebrowsing.appspot.com/s/phishing.html",
+      "AMP cache -> phishing",
+      "PHISHING"
+    ],
+    [
+      "wrap_google_translate",
+      "https://translate.google.com/translate?sl=en&tl=es&u=https%3A%2F%2Ftestsafebrowsing.appspot.com%2Fs%2Fphishing.html",
+      "translate proxy -> phishing",
+      "PHISHING"
+    ],
+    [
+      "wrap_translate_goog",
+      "https://testsafebrowsing-appspot-com.translate.goog/s/phishing.html?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=en",
+      "translate.goog proxy -> phishing",
+      "PHISHING"
+    ],
+    [
+      "wrap_appspot_hosting",
+      "https://testsafebrowsing.appspot.com/s/phishing.html",
+      "Google App Engine hosting (appspot.com) phishing page",
+      "PHISHING"
+    ],
+    [
+      "wrap_youtube_redirect",
+      "https://www.youtube.com/redirect?q=https%3A%2F%2Ftestsafebrowsing.appspot.com%2Fs%2Fphishing.html",
+      "youtube.com open redirect -> phishing",
+      "PHISHING"
+    ],
+    [
+      "wrap_google_url_q_landing",
+      "https://www.google.com/url?q=https%3A%2F%2Fcommonaccount-test.github.io%2FUrlTestingNew%2Ft1%2Fthreat%2Fphish-landing.html",
+      "google.com/url?q= -> hosted phishing landing",
+      "PHISHING"
+    ],
+    [
+      "wrap_google_amp_landing",
+      "https://www.google.com/amp/s/commonaccount-test.github.io/UrlTestingNew/t1/threat/phish-landing.html",
+      "google AMP viewer -> hosted phishing landing",
+      "PHISHING"
+    ],
+    [
+      "wrap_ms_safelink",
+      "https://nam01.safelinks.protection.outlook.com/?url=https%3A%2F%2Ftestsafebrowsing.appspot.com%2Fs%2Fphishing.html&data=qa",
+      "MS Safelinks wrapper -> phishing (recognise+unwrap)",
+      "PHISHING"
+    ],
+    [
+      "wrap_proofpoint",
+      "https://urldefense.com/v3/__https://testsafebrowsing.appspot.com/s/phishing.html__;!!QA!!",
+      "Proofpoint urldefense double-wrap -> phishing (re-evaluate inner)",
+      "PHISHING"
+    ],
+    [
+      "wrap_mimecast",
+      "https://protect-us.mimecast.com/s/qa?domain=testsafebrowsing.appspot.com",
+      "Mimecast wrapper -> phishing (re-evaluate inner)",
+      "PHISHING"
+    ],
+    [
+      "wrap_barracuda",
+      "https://linkprotect.cudasvc.com/url?a=https%3A%2F%2Ftestsafebrowsing.appspot.com%2Fs%2Fphishing.html",
+      "Barracuda linkprotect wrapper -> phishing",
+      "PHISHING"
+    ],
+    [
+      "wrap_query_next",
+      "https://example.com/?next=https%3A%2F%2Ftestsafebrowsing.appspot.com%2Fs%2Fphishing.html",
+      "phishing URL in ?next= query param",
+      "PHISHING"
+    ],
+    [
+      "wrap_fragment",
+      "https://example.com/#https%3A%2F%2Ftestsafebrowsing.appspot.com%2Fs%2Fphishing.html",
+      "phishing URL in #fragment",
+      "PHISHING"
     ]
   ],
   "user": [
+    [
+      "wrap_google_sites",
+      "https://sites.google.com/view/REPLACE",
+      "Google Sites page hosting phishing",
+      "PHISHING"
+    ],
+    [
+      "wrap_google_drive",
+      "https://drive.google.com/file/d/REPLACE/view",
+      "Google Drive shared phishing file",
+      "PHISHING"
+    ],
+    [
+      "wrap_google_docs",
+      "https://docs.google.com/document/d/REPLACE/edit",
+      "Google Docs with a phishing link",
+      "PHISHING"
+    ],
+    [
+      "wrap_google_forms",
+      "https://docs.google.com/forms/d/REPLACE/viewform",
+      "Google Forms phishing",
+      "PHISHING"
+    ],
+    [
+      "wrap_google_script",
+      "https://script.google.com/macros/s/REPLACE/exec",
+      "Apps Script redirect to phishing",
+      "PHISHING"
+    ],
+    [
+      "wrap_google_storage",
+      "https://storage.googleapis.com/REPLACE/phish.html",
+      "GCS-hosted phishing",
+      "PHISHING"
+    ],
+    [
+      "wrap_google_ugc",
+      "https://REPLACE.googleusercontent.com/phish",
+      "googleusercontent-hosted phishing",
+      "PHISHING"
+    ],
+    [
+      "wrap_firebase_webapp",
+      "https://REPLACE.web.app/phish.html",
+      "Firebase-hosted phishing",
+      "PHISHING"
+    ],
+    [
+      "wrap_ms_sharepoint",
+      "https://REPLACE.sharepoint.com/:x:/g/REPLACE",
+      "SharePoint-hosted phishing",
+      "PHISHING"
+    ],
+    [
+      "wrap_ms_onedrive",
+      "https://1drv.ms/REPLACE",
+      "OneDrive short link -> phishing",
+      "PHISHING"
+    ],
+    [
+      "wrap_ms_forms",
+      "https://forms.office.com/r/REPLACE",
+      "MS Forms phishing",
+      "PHISHING"
+    ],
     [
       "user_shortener_bitly",
       "https://bit.ly/REPLACE",
