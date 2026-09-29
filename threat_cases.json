@@ -1,78 +1,213 @@
 {
   "base": "https://commonaccount-test.github.io/UrlTestingNew",
   "ver": "t1",
-  "cases": [
+  "gh": [
     {
       "id": "threat_eicar-link",
-      "desc": "anchor to the EICAR AV test file (eicar.org)",
+      "desc": "anchor to the EICAR AV test file",
       "path": "t1/threat/eicar-link.html",
-      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>EICAR link</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - EICAR link</p>\n<p><a href=\"https://secure.eicar.org/eicar.com.txt\">Download the EICAR AV test file</a></p>\n</body>\n</html>\n",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>EICAR link</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - EICAR link</p>\n<p><a href=\"https://secure.eicar.org/eicar.com.txt\">EICAR AV test file</a></p>\n</body>\n</html>\n",
       "verdict": "MALICIOUS",
-      "entry": true
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_phishing-link",
+      "desc": "anchor to Safe Browsing phishing test page",
+      "path": "t1/threat/phishing-link.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Phishing link</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Phishing link</p>\n<p><a href=\"https://testsafebrowsing.appspot.com/s/phishing.html\">login</a></p>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_malware-link",
+      "desc": "anchor to Safe Browsing malware test page",
+      "path": "t1/threat/malware-link.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Malware link</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Malware link</p>\n<p><a href=\"https://testsafebrowsing.appspot.com/s/malware.html\">file</a></p>\n</body>\n</html>\n",
+      "verdict": "MALICIOUS",
+      "entry": true,
+      "entry_query": ""
     },
     {
       "id": "threat_eicar-drop",
-      "desc": "auto-download EICAR from eicar.org (not hosted here)",
+      "desc": "auto-download EICAR",
       "path": "t1/threat/eicar-drop.html",
       "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>EICAR drop</title>\n<meta http-equiv=\"refresh\" content=\"0;url=https://secure.eicar.org/eicar.com.txt\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - EICAR drop</p>\n<p>redirecting to <code>https://secure.eicar.org/eicar.com.txt</code>...</p>\n<script>setTimeout(function(){location.href='https://secure.eicar.org/eicar.com.txt';}, 0);</script>\n</body>\n</html>\n",
       "verdict": "MALICIOUS",
-      "entry": true
+      "entry": true,
+      "entry_query": ""
     },
     {
-      "id": "threat_exe-drop",
-      "desc": "auto-download a benign dummy .exe (executable-extension path)",
-      "path": "t1/threat/exe-drop.html",
-      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>EXE drop</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - EXE drop</p>\n<p><a href=\"files/benign-test.exe\" download id=\"d\">download</a></p>\n<script>location.href='files/benign-test.exe';</script>\n</body>\n</html>\n",
+      "id": "threat_drop-exe",
+      "desc": "auto-download benign dummy .exe (executable path)",
+      "path": "t1/threat/drop-exe.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Drop .exe</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Drop .exe</p>\n<p><a href=\"files/benign-test.exe\" download>download</a></p>\n<script>location.href='files/benign-test.exe';</script>\n</body>\n</html>\n",
       "verdict": "MALICIOUS",
-      "entry": true
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_drop-scr",
+      "desc": "auto-download benign dummy .scr (screensaver exe path)",
+      "path": "t1/threat/drop-scr.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Drop .scr</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Drop .scr</p>\n<p><a href=\"files/benign-test.scr\" download>download</a></p>\n<script>location.href='files/benign-test.scr';</script>\n</body>\n</html>\n",
+      "verdict": "MALICIOUS",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_drop-bat",
+      "desc": "auto-download benign dummy .bat (batch script path)",
+      "path": "t1/threat/drop-bat.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Drop .bat</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Drop .bat</p>\n<p><a href=\"files/benign-test.bat\" download>download</a></p>\n<script>location.href='files/benign-test.bat';</script>\n</body>\n</html>\n",
+      "verdict": "MALICIOUS",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_drop-js",
+      "desc": "auto-download benign dummy .js (JS dropper path)",
+      "path": "t1/threat/drop-js.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Drop .js</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Drop .js</p>\n<p><a href=\"files/benign-test.js\" download>download</a></p>\n<script>location.href='files/benign-test.js';</script>\n</body>\n</html>\n",
+      "verdict": "MALICIOUS",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_drop-jar",
+      "desc": "auto-download benign dummy .jar (java archive path)",
+      "path": "t1/threat/drop-jar.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Drop .jar</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Drop .jar</p>\n<p><a href=\"files/benign-test.jar\" download>download</a></p>\n<script>location.href='files/benign-test.jar';</script>\n</body>\n</html>\n",
+      "verdict": "MALICIOUS",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_drop-msi",
+      "desc": "auto-download benign dummy .msi (installer path)",
+      "path": "t1/threat/drop-msi.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Drop .msi</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Drop .msi</p>\n<p><a href=\"files/benign-test.msi\" download>download</a></p>\n<script>location.href='files/benign-test.msi';</script>\n</body>\n</html>\n",
+      "verdict": "MALICIOUS",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_drop-double-ext",
+      "desc": "double-extension invoice.pdf.exe",
+      "path": "t1/threat/drop-double-ext.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Double extension drop</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Double extension drop</p>\n<p><a href=\"files/invoice.pdf.exe\" download>invoice.pdf</a></p>\n<script>location.href=\"files/invoice.pdf.exe\";</script>\n</body>\n</html>\n",
+      "verdict": "MALICIOUS",
+      "entry": true,
+      "entry_query": ""
     },
     {
       "id": "threat_file-drop",
-      "desc": "auto-download a benign .zip (generic file-download path)",
+      "desc": "auto-download a benign .zip",
       "path": "t1/threat/file-drop.html",
-      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>File drop</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - File drop</p>\n<p><a href=\"files/benign-test.zip\" download id=\"d\">download</a></p>\n<script>location.href='files/benign-test.zip';</script>\n</body>\n</html>\n",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Benign file drop</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Benign file drop</p>\n<p><a href=\"files/benign-test.zip\" download>download</a></p>\n<script>location.href=\"files/benign-test.zip\";</script>\n</body>\n</html>\n",
       "verdict": "CLEAN",
-      "entry": true
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_archive-pwd",
+      "desc": "password-protected archive (per policy, often held)",
+      "path": "t1/threat/archive-pwd.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Password archive drop</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Password archive drop</p>\n<p>password: <code>infected</code></p>\n<p><a href=\"files/protected.zip\" download>archive</a></p>\n<script>location.href=\"files/protected.zip\";</script>\n</body>\n</html>\n",
+      "verdict": "MALICIOUS",
+      "entry": true,
+      "entry_query": ""
     },
     {
       "id": "threat_phishing-redirect",
-      "desc": "meta+JS redirect to Safe Browsing phishing test page",
+      "desc": "meta+JS redirect to phishing",
       "path": "t1/threat/phishing-redirect.html",
       "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>phishing-redirect</title>\n<meta http-equiv=\"refresh\" content=\"0;url=https://testsafebrowsing.appspot.com/s/phishing.html\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - phishing-redirect</p>\n<p>redirecting to <code>https://testsafebrowsing.appspot.com/s/phishing.html</code>...</p>\n<script>setTimeout(function(){location.href='https://testsafebrowsing.appspot.com/s/phishing.html';}, 0);</script>\n</body>\n</html>\n",
       "verdict": "PHISHING",
-      "entry": true
+      "entry": true,
+      "entry_query": ""
     },
     {
       "id": "threat_malware-redirect",
-      "desc": "meta+JS redirect to Safe Browsing malware test page",
+      "desc": "meta+JS redirect to malware",
       "path": "t1/threat/malware-redirect.html",
       "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>malware-redirect</title>\n<meta http-equiv=\"refresh\" content=\"0;url=https://testsafebrowsing.appspot.com/s/malware.html\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - malware-redirect</p>\n<p>redirecting to <code>https://testsafebrowsing.appspot.com/s/malware.html</code>...</p>\n<script>setTimeout(function(){location.href='https://testsafebrowsing.appspot.com/s/malware.html';}, 0);</script>\n</body>\n</html>\n",
       "verdict": "MALICIOUS",
-      "entry": true
+      "entry": true,
+      "entry_query": ""
     },
     {
       "id": "threat_unwanted-redirect",
-      "desc": "meta+JS redirect to Safe Browsing unwanted-software test page",
+      "desc": "meta+JS redirect to unwanted-software",
       "path": "t1/threat/unwanted-redirect.html",
       "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>unwanted-redirect</title>\n<meta http-equiv=\"refresh\" content=\"0;url=https://testsafebrowsing.appspot.com/s/unwanted.html\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - unwanted-redirect</p>\n<p>redirecting to <code>https://testsafebrowsing.appspot.com/s/unwanted.html</code>...</p>\n<script>setTimeout(function(){location.href='https://testsafebrowsing.appspot.com/s/unwanted.html';}, 0);</script>\n</body>\n</html>\n",
       "verdict": "PHISHING",
-      "entry": true
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_benign-redirect",
+      "desc": "meta+JS redirect to a benign site",
+      "path": "t1/threat/benign-redirect.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>benign-redirect</title>\n<meta http-equiv=\"refresh\" content=\"0;url=https://example.com/\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - benign-redirect</p>\n<p>redirecting to <code>https://example.com/</code>...</p>\n<script>setTimeout(function(){location.href='https://example.com/';}, 0);</script>\n</body>\n</html>\n",
+      "verdict": "CLEAN",
+      "entry": true,
+      "entry_query": ""
     },
     {
       "id": "threat_js-delayed-redirect",
-      "desc": "JS redirect to phishing after a 3s delay",
+      "desc": "JS redirect to phishing after 3s",
       "path": "t1/threat/js-delayed-redirect.html",
       "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>JS delayed redirect</title>\n<meta http-equiv=\"refresh\" content=\"3;url=https://testsafebrowsing.appspot.com/s/phishing.html\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - JS delayed redirect</p>\n<p>redirecting to <code>https://testsafebrowsing.appspot.com/s/phishing.html</code>...</p>\n<script>setTimeout(function(){location.href='https://testsafebrowsing.appspot.com/s/phishing.html';}, 3000);</script>\n</body>\n</html>\n",
       "verdict": "PHISHING",
-      "entry": true
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_js-replace-redirect",
+      "desc": "location.replace() redirect to phishing",
+      "path": "t1/threat/js-replace-redirect.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>JS location.replace</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - JS location.replace</p>\n<script>location.replace('https://testsafebrowsing.appspot.com/s/phishing.html');</script>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_form-autosubmit-redirect",
+      "desc": "auto-submitting form navigating to phishing",
+      "path": "t1/threat/form-autosubmit-redirect.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Auto-submit form</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Auto-submit form</p>\n<form id=\"f\" action=\"https://testsafebrowsing.appspot.com/s/phishing.html\" method=\"get\"></form>\n<script>document.getElementById(\"f\").submit();</script>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_anchor-autoclick-redirect",
+      "desc": "auto-clicked anchor to phishing",
+      "path": "t1/threat/anchor-autoclick-redirect.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Anchor auto-click</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Anchor auto-click</p>\n<a id=\"a\" href=\"https://testsafebrowsing.appspot.com/s/phishing.html\">go</a>\n<script>document.getElementById(\"a\").click();</script>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_base-href-redirect",
+      "desc": "meta-refresh resolved via <base href> to phishing",
+      "path": "t1/threat/base-href-redirect.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>base-href redirect</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - base-href redirect</p>\n<base href=\"https://testsafebrowsing.appspot.com/s/\">\n<meta http-equiv=\"refresh\" content=\"0;url=phishing.html\">\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
     },
     {
       "id": "threat_multi-hop-1",
-      "desc": "5-hop redirect chain ending at phishing",
+      "desc": "5-hop chain ending at phishing",
       "path": "t1/threat/multi-hop-1.html",
       "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Multi-redirect hop 1/5</title>\n<meta http-equiv=\"refresh\" content=\"0;url=multi-hop-2.html\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Multi-redirect hop 1/5</p>\n<p>redirecting to <code>multi-hop-2.html</code>...</p>\n<script>setTimeout(function(){location.href='multi-hop-2.html';}, 0);</script>\n</body>\n</html>\n",
       "verdict": "PHISHING",
-      "entry": true
+      "entry": true,
+      "entry_query": ""
     },
     {
       "id": "threat_multi-hop-2",
@@ -80,7 +215,8 @@
       "path": "t1/threat/multi-hop-2.html",
       "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Multi-redirect hop 2/5</title>\n<meta http-equiv=\"refresh\" content=\"0;url=multi-hop-3.html\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Multi-redirect hop 2/5</p>\n<p>redirecting to <code>multi-hop-3.html</code>...</p>\n<script>setTimeout(function(){location.href='multi-hop-3.html';}, 0);</script>\n</body>\n</html>\n",
       "verdict": null,
-      "entry": false
+      "entry": false,
+      "entry_query": ""
     },
     {
       "id": "threat_multi-hop-3",
@@ -88,7 +224,8 @@
       "path": "t1/threat/multi-hop-3.html",
       "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Multi-redirect hop 3/5</title>\n<meta http-equiv=\"refresh\" content=\"0;url=multi-hop-4.html\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Multi-redirect hop 3/5</p>\n<p>redirecting to <code>multi-hop-4.html</code>...</p>\n<script>setTimeout(function(){location.href='multi-hop-4.html';}, 0);</script>\n</body>\n</html>\n",
       "verdict": null,
-      "entry": false
+      "entry": false,
+      "entry_query": ""
     },
     {
       "id": "threat_multi-hop-4",
@@ -96,7 +233,8 @@
       "path": "t1/threat/multi-hop-4.html",
       "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Multi-redirect hop 4/5</title>\n<meta http-equiv=\"refresh\" content=\"0;url=multi-hop-5.html\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Multi-redirect hop 4/5</p>\n<p>redirecting to <code>multi-hop-5.html</code>...</p>\n<script>setTimeout(function(){location.href='multi-hop-5.html';}, 0);</script>\n</body>\n</html>\n",
       "verdict": null,
-      "entry": false
+      "entry": false,
+      "entry_query": ""
     },
     {
       "id": "threat_multi-hop-5",
@@ -104,15 +242,17 @@
       "path": "t1/threat/multi-hop-5.html",
       "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Multi-redirect hop 5/5</title>\n<meta http-equiv=\"refresh\" content=\"0;url=https://testsafebrowsing.appspot.com/s/phishing.html\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Multi-redirect hop 5/5</p>\n<p>redirecting to <code>https://testsafebrowsing.appspot.com/s/phishing.html</code>...</p>\n<script>setTimeout(function(){location.href='https://testsafebrowsing.appspot.com/s/phishing.html';}, 0);</script>\n</body>\n</html>\n",
       "verdict": null,
-      "entry": false
+      "entry": false,
+      "entry_query": ""
     },
     {
       "id": "threat_loop-a",
-      "desc": "redirect loop A<->B (loop-guard; no threat reached)",
+      "desc": "redirect loop guard A<->B",
       "path": "t1/threat/loop-a.html",
       "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Redirect loop A</title>\n<meta http-equiv=\"refresh\" content=\"0;url=loop-b.html\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Redirect loop A</p>\n<p>redirecting to <code>loop-b.html</code>...</p>\n<script>setTimeout(function(){location.href='loop-b.html';}, 0);</script>\n</body>\n</html>\n",
       "verdict": "CLEAN",
-      "entry": true
+      "entry": true,
+      "entry_query": ""
     },
     {
       "id": "threat_loop-b",
@@ -120,39 +260,576 @@
       "path": "t1/threat/loop-b.html",
       "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Redirect loop B</title>\n<meta http-equiv=\"refresh\" content=\"0;url=loop-a.html\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Redirect loop B</p>\n<p>redirecting to <code>loop-a.html</code>...</p>\n<script>setTimeout(function(){location.href='loop-a.html';}, 0);</script>\n</body>\n</html>\n",
       "verdict": null,
-      "entry": false
+      "entry": false,
+      "entry_query": ""
     },
     {
       "id": "threat_chain-to-exe",
-      "desc": "redirect that ends at the exe-drop page",
+      "desc": "redirect ending at exe drop",
       "path": "t1/threat/chain-to-exe.html",
-      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Chain to EXE drop</title>\n<meta http-equiv=\"refresh\" content=\"0;url=exe-drop.html\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Chain to EXE drop</p>\n<p>redirecting to <code>exe-drop.html</code>...</p>\n<script>setTimeout(function(){location.href='exe-drop.html';}, 0);</script>\n</body>\n</html>\n",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Chain to EXE drop</title>\n<meta http-equiv=\"refresh\" content=\"0;url=drop-exe.html\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Chain to EXE drop</p>\n<p>redirecting to <code>drop-exe.html</code>...</p>\n<script>setTimeout(function(){location.href='drop-exe.html';}, 0);</script>\n</body>\n</html>\n",
       "verdict": "MALICIOUS",
-      "entry": true
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_open-redirect",
+      "desc": "open-redirect: entry URL carries ?url=<phishing>",
+      "path": "t1/threat/open-redirect.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Open redirect (?url=)</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Open redirect (?url=)</p>\n<script>var u=new URLSearchParams(location.search).get(\"url\");if(u)location.href=u;</script><p>?url= open redirect</p>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": "?url=https%3A%2F%2Ftestsafebrowsing.appspot.com%2Fs%2Fphishing.html"
+    },
+    {
+      "id": "threat_ssrf-localhost",
+      "desc": "redirect to loopback (must-not-SSRF; expect no fetch)",
+      "path": "t1/threat/ssrf-localhost.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>ssrf-localhost</title>\n<meta http-equiv=\"refresh\" content=\"0;url=http://127.0.0.1/\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - ssrf-localhost</p>\n<p>redirecting to <code>http://127.0.0.1/</code>...</p>\n<script>setTimeout(function(){location.href='http://127.0.0.1/';}, 0);</script>\n</body>\n</html>\n",
+      "verdict": "CLEAN",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_ssrf-localhost2",
+      "desc": "redirect to localhost (must-not-SSRF; expect no fetch)",
+      "path": "t1/threat/ssrf-localhost2.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>ssrf-localhost2</title>\n<meta http-equiv=\"refresh\" content=\"0;url=http://localhost/\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - ssrf-localhost2</p>\n<p>redirecting to <code>http://localhost/</code>...</p>\n<script>setTimeout(function(){location.href='http://localhost/';}, 0);</script>\n</body>\n</html>\n",
+      "verdict": "CLEAN",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_ssrf-metadata",
+      "desc": "redirect to cloud metadata (must-not-SSRF; expect no fetch)",
+      "path": "t1/threat/ssrf-metadata.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>ssrf-metadata</title>\n<meta http-equiv=\"refresh\" content=\"0;url=http://169.254.169.254/latest/meta-data/\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - ssrf-metadata</p>\n<p>redirecting to <code>http://169.254.169.254/latest/meta-data/</code>...</p>\n<script>setTimeout(function(){location.href='http://169.254.169.254/latest/meta-data/';}, 0);</script>\n</body>\n</html>\n",
+      "verdict": "CLEAN",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_ssrf-private10",
+      "desc": "redirect to 10.x private (must-not-SSRF; expect no fetch)",
+      "path": "t1/threat/ssrf-private10.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>ssrf-private10</title>\n<meta http-equiv=\"refresh\" content=\"0;url=http://10.0.0.1/\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - ssrf-private10</p>\n<p>redirecting to <code>http://10.0.0.1/</code>...</p>\n<script>setTimeout(function(){location.href='http://10.0.0.1/';}, 0);</script>\n</body>\n</html>\n",
+      "verdict": "CLEAN",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_ssrf-private192",
+      "desc": "redirect to 192.168.x private (must-not-SSRF; expect no fetch)",
+      "path": "t1/threat/ssrf-private192.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>ssrf-private192</title>\n<meta http-equiv=\"refresh\" content=\"0;url=http://192.168.1.1/\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - ssrf-private192</p>\n<p>redirecting to <code>http://192.168.1.1/</code>...</p>\n<script>setTimeout(function(){location.href='http://192.168.1.1/';}, 0);</script>\n</body>\n</html>\n",
+      "verdict": "CLEAN",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_fake-login",
+      "desc": "generic fake login form (non-submitting)",
+      "path": "t1/threat/fake-login.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Fake login</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Fake login</p>\n<h2>Sign in to your account</h2>\n<form action=\"#\" onsubmit=\"return false\">\nEmail <input name=\"u\"><br>Password <input type=\"password\" name=\"p\"><br><button>Sign in</button>\n</form>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_fake-bank-login",
+      "desc": "brand-spoof bank login",
+      "path": "t1/threat/fake-bank-login.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Fake bank login</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Fake bank login</p>\n<h2>SecureBank Online Banking</h2>\n<form action=\"#\" onsubmit=\"return false\">\nEmail <input name=\"u\"><br>Password <input type=\"password\" name=\"p\"><br><button>Sign in</button>\n</form>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_oauth-consent",
+      "desc": "OAuth consent phishing simulation",
+      "path": "t1/threat/oauth-consent.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>OAuth consent phishing</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - OAuth consent phishing</p>\n<h2>Grant access</h2><p>App requests access to your mailbox.</p><form action=\"#\" onsubmit=\"return false\"><button>Allow</button></form>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_clickfix-captcha",
+      "desc": "ClickFix / fake-captcha social engineering",
+      "path": "t1/threat/clickfix-captcha.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>ClickFix fake captcha</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - ClickFix fake captcha</p>\n<h2>Verify you are human</h2><p>Press Win+R and paste to continue.</p><button onclick=\"return false\">I am not a robot</button>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_cred-form-webhook",
+      "desc": "credential/card form (webhook exfil sim, non-submitting)",
+      "path": "t1/threat/cred-form-webhook.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Credential form</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Credential form</p>\n<form action=\"#\" onsubmit=\"return false\">card <input name=\"c\"><button>Pay</button></form>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_homoglyph-brand",
+      "desc": "homoglyph brand text in a login page",
+      "path": "t1/threat/homoglyph-brand.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Homoglyph brand</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Homoglyph brand</p>\n<h2>Sign in to \u0430pple.com</h2><h2></h2>\n<form action=\"#\" onsubmit=\"return false\">\nEmail <input name=\"u\"><br>Password <input type=\"password\" name=\"p\"><br><button>Sign in</button>\n</form>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_svg-with-script",
+      "desc": "inline SVG carrying a script + link to phishing",
+      "path": "t1/threat/svg-with-script.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>SVG with script</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - SVG with script</p>\n<svg xmlns=\"http://www.w3.org/2000/svg\"><script>alert(\"SVG-TEST\")</script><a href=\"https://testsafebrowsing.appspot.com/s/phishing.html\"><text x=\"10\" y=\"20\">x</text></a></svg>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_scheme-javascript",
+      "desc": "blocked-scheme anchor: javascript: URI (expect ignored/blocked)",
+      "path": "t1/threat/scheme-javascript.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>scheme-javascript</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - scheme-javascript</p>\n<p><a href=\"javascript:alert('SCHEME-TEST')\">click</a></p>\n</body>\n</html>\n",
+      "verdict": "CLEAN",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_scheme-data",
+      "desc": "blocked-scheme anchor: data:text/html URI (expect ignored/blocked)",
+      "path": "t1/threat/scheme-data.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>scheme-data</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - scheme-data</p>\n<p><a href=\"data:text/html,<script>alert('SCHEME-TEST')</script>\">click</a></p>\n</body>\n</html>\n",
+      "verdict": "CLEAN",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_scheme-vbscript",
+      "desc": "blocked-scheme anchor: vbscript: URI (expect ignored/blocked)",
+      "path": "t1/threat/scheme-vbscript.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>scheme-vbscript</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - scheme-vbscript</p>\n<p><a href=\"vbscript:msgbox('x')\">click</a></p>\n</body>\n</html>\n",
+      "verdict": "CLEAN",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_scheme-file",
+      "desc": "blocked-scheme anchor: file: URI (expect ignored/blocked)",
+      "path": "t1/threat/scheme-file.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>scheme-file</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - scheme-file</p>\n<p><a href=\"file:///etc/passwd\">click</a></p>\n</body>\n</html>\n",
+      "verdict": "CLEAN",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_scheme-blob",
+      "desc": "blocked-scheme anchor: blob: URI (expect ignored/blocked)",
+      "path": "t1/threat/scheme-blob.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>scheme-blob</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - scheme-blob</p>\n<p><a href=\"blob:https://example.com/uuid\">click</a></p>\n</body>\n</html>\n",
+      "verdict": "CLEAN",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_obf-percent",
+      "desc": "percent-encoded phishing URL in href",
+      "path": "t1/threat/obf-percent.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Percent-encoded URL</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Percent-encoded URL</p>\n<a href=\"https%3A%2F%2Ftestsafebrowsing.appspot.com%2Fs%2Fphishing.html\">x</a>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_obf-double",
+      "desc": "double percent-encoded phishing URL",
+      "path": "t1/threat/obf-double.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Double-encoded URL</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Double-encoded URL</p>\n<a href=\"https%253A%252F%252Ftestsafebrowsing.appspot.com%252Fs%252Fphishing.html\">x</a>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_obf-mixedcase",
+      "desc": "mixed-case scheme",
+      "path": "t1/threat/obf-mixedcase.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Mixed-case scheme</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Mixed-case scheme</p>\n<a href=\"HtTpS://testsafebrowsing.appspot.com/s/phishing.html\">x</a>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_obf-userinfo",
+      "desc": "userinfo trick good.com@evil.com (real host is phishing)",
+      "path": "t1/threat/obf-userinfo.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Userinfo trick</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Userinfo trick</p>\n<a href=\"https://example.com@testsafebrowsing.appspot.com/s/phishing.html\">example.com</a>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_obf-zerowidth",
+      "desc": "zero-width char inside the URL",
+      "path": "t1/threat/obf-zerowidth.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Zero-width in URL</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Zero-width in URL</p>\n<a href=\"https://testsafebrowsing.appspot.com/s/phish\u200bing.html\">x</a>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_obf-split",
+      "desc": "URL split across HTML tags",
+      "path": "t1/threat/obf-split.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>URL split by tags</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - URL split by tags</p>\nhttps://testsafebrowsing<span>.appspot.com</span>/s/phishing.html\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_qr-phishing",
+      "desc": "QR image encoding a phishing URL (quishing)",
+      "path": "t1/threat/qr-phishing.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>QR to phishing</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - QR to phishing</p>\n<img src=\"https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=https%3A%2F%2Ftestsafebrowsing.appspot.com%2Fs%2Fphishing.html\" alt=\"qr\">\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_scale-100-links",
+      "desc": "120 links + one phishing (bulk handling)",
+      "path": "t1/threat/scale-100-links.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>100+ links</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - 100+ links</p>\n<a href=\"https://example.com/link1\">l1</a>\n<a href=\"https://example.com/link2\">l2</a>\n<a href=\"https://example.com/link3\">l3</a>\n<a href=\"https://example.com/link4\">l4</a>\n<a href=\"https://example.com/link5\">l5</a>\n<a href=\"https://example.com/link6\">l6</a>\n<a href=\"https://example.com/link7\">l7</a>\n<a href=\"https://example.com/link8\">l8</a>\n<a href=\"https://example.com/link9\">l9</a>\n<a href=\"https://example.com/link10\">l10</a>\n<a href=\"https://example.com/link11\">l11</a>\n<a href=\"https://example.com/link12\">l12</a>\n<a href=\"https://example.com/link13\">l13</a>\n<a href=\"https://example.com/link14\">l14</a>\n<a href=\"https://example.com/link15\">l15</a>\n<a href=\"https://example.com/link16\">l16</a>\n<a href=\"https://example.com/link17\">l17</a>\n<a href=\"https://example.com/link18\">l18</a>\n<a href=\"https://example.com/link19\">l19</a>\n<a href=\"https://example.com/link20\">l20</a>\n<a href=\"https://example.com/link21\">l21</a>\n<a href=\"https://example.com/link22\">l22</a>\n<a href=\"https://example.com/link23\">l23</a>\n<a href=\"https://example.com/link24\">l24</a>\n<a href=\"https://example.com/link25\">l25</a>\n<a href=\"https://example.com/link26\">l26</a>\n<a href=\"https://example.com/link27\">l27</a>\n<a href=\"https://example.com/link28\">l28</a>\n<a href=\"https://example.com/link29\">l29</a>\n<a href=\"https://example.com/link30\">l30</a>\n<a href=\"https://example.com/link31\">l31</a>\n<a href=\"https://example.com/link32\">l32</a>\n<a href=\"https://example.com/link33\">l33</a>\n<a href=\"https://example.com/link34\">l34</a>\n<a href=\"https://example.com/link35\">l35</a>\n<a href=\"https://example.com/link36\">l36</a>\n<a href=\"https://example.com/link37\">l37</a>\n<a href=\"https://example.com/link38\">l38</a>\n<a href=\"https://example.com/link39\">l39</a>\n<a href=\"https://example.com/link40\">l40</a>\n<a href=\"https://example.com/link41\">l41</a>\n<a href=\"https://example.com/link42\">l42</a>\n<a href=\"https://example.com/link43\">l43</a>\n<a href=\"https://example.com/link44\">l44</a>\n<a href=\"https://example.com/link45\">l45</a>\n<a href=\"https://example.com/link46\">l46</a>\n<a href=\"https://example.com/link47\">l47</a>\n<a href=\"https://example.com/link48\">l48</a>\n<a href=\"https://example.com/link49\">l49</a>\n<a href=\"https://example.com/link50\">l50</a>\n<a href=\"https://example.com/link51\">l51</a>\n<a href=\"https://example.com/link52\">l52</a>\n<a href=\"https://example.com/link53\">l53</a>\n<a href=\"https://example.com/link54\">l54</a>\n<a href=\"https://example.com/link55\">l55</a>\n<a href=\"https://example.com/link56\">l56</a>\n<a href=\"https://example.com/link57\">l57</a>\n<a href=\"https://example.com/link58\">l58</a>\n<a href=\"https://example.com/link59\">l59</a>\n<a href=\"https://example.com/link60\">l60</a>\n<a href=\"https://example.com/link61\">l61</a>\n<a href=\"https://example.com/link62\">l62</a>\n<a href=\"https://example.com/link63\">l63</a>\n<a href=\"https://example.com/link64\">l64</a>\n<a href=\"https://example.com/link65\">l65</a>\n<a href=\"https://example.com/link66\">l66</a>\n<a href=\"https://example.com/link67\">l67</a>\n<a href=\"https://example.com/link68\">l68</a>\n<a href=\"https://example.com/link69\">l69</a>\n<a href=\"https://example.com/link70\">l70</a>\n<a href=\"https://example.com/link71\">l71</a>\n<a href=\"https://example.com/link72\">l72</a>\n<a href=\"https://example.com/link73\">l73</a>\n<a href=\"https://example.com/link74\">l74</a>\n<a href=\"https://example.com/link75\">l75</a>\n<a href=\"https://example.com/link76\">l76</a>\n<a href=\"https://example.com/link77\">l77</a>\n<a href=\"https://example.com/link78\">l78</a>\n<a href=\"https://example.com/link79\">l79</a>\n<a href=\"https://example.com/link80\">l80</a>\n<a href=\"https://example.com/link81\">l81</a>\n<a href=\"https://example.com/link82\">l82</a>\n<a href=\"https://example.com/link83\">l83</a>\n<a href=\"https://example.com/link84\">l84</a>\n<a href=\"https://example.com/link85\">l85</a>\n<a href=\"https://example.com/link86\">l86</a>\n<a href=\"https://example.com/link87\">l87</a>\n<a href=\"https://example.com/link88\">l88</a>\n<a href=\"https://example.com/link89\">l89</a>\n<a href=\"https://example.com/link90\">l90</a>\n<a href=\"https://example.com/link91\">l91</a>\n<a href=\"https://example.com/link92\">l92</a>\n<a href=\"https://example.com/link93\">l93</a>\n<a href=\"https://example.com/link94\">l94</a>\n<a href=\"https://example.com/link95\">l95</a>\n<a href=\"https://example.com/link96\">l96</a>\n<a href=\"https://example.com/link97\">l97</a>\n<a href=\"https://example.com/link98\">l98</a>\n<a href=\"https://example.com/link99\">l99</a>\n<a href=\"https://example.com/link100\">l100</a>\n<a href=\"https://example.com/link101\">l101</a>\n<a href=\"https://example.com/link102\">l102</a>\n<a href=\"https://example.com/link103\">l103</a>\n<a href=\"https://example.com/link104\">l104</a>\n<a href=\"https://example.com/link105\">l105</a>\n<a href=\"https://example.com/link106\">l106</a>\n<a href=\"https://example.com/link107\">l107</a>\n<a href=\"https://example.com/link108\">l108</a>\n<a href=\"https://example.com/link109\">l109</a>\n<a href=\"https://example.com/link110\">l110</a>\n<a href=\"https://example.com/link111\">l111</a>\n<a href=\"https://example.com/link112\">l112</a>\n<a href=\"https://example.com/link113\">l113</a>\n<a href=\"https://example.com/link114\">l114</a>\n<a href=\"https://example.com/link115\">l115</a>\n<a href=\"https://example.com/link116\">l116</a>\n<a href=\"https://example.com/link117\">l117</a>\n<a href=\"https://example.com/link118\">l118</a>\n<a href=\"https://example.com/link119\">l119</a>\n<a href=\"https://example.com/link120\">l120</a>\n<a href=\"https://testsafebrowsing.appspot.com/s/phishing.html\">p</a>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_scale-long-url",
+      "desc": ">2000-char URL to phishing",
+      "path": "t1/threat/scale-long-url.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Very long URL</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Very long URL</p>\n<a href=\"https://testsafebrowsing.appspot.com/s/phishing.html?x=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\">x</a>\n</body>\n</html>\n",
+      "verdict": "PHISHING",
+      "entry": true,
+      "entry_query": ""
     },
     {
       "id": "threat_s_p1",
-      "desc": "shortener-style short path -> phishing",
+      "desc": "short path -> phishing",
       "path": "t1/threat/s/p1.html",
       "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Short link s/p1</title>\n<meta http-equiv=\"refresh\" content=\"0;url=https://testsafebrowsing.appspot.com/s/phishing.html\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Short link s/p1</p>\n<p>redirecting to <code>https://testsafebrowsing.appspot.com/s/phishing.html</code>...</p>\n<script>setTimeout(function(){location.href='https://testsafebrowsing.appspot.com/s/phishing.html';}, 0);</script>\n</body>\n</html>\n",
       "verdict": "PHISHING",
-      "entry": true
+      "entry": true,
+      "entry_query": ""
     },
     {
       "id": "threat_s_m1",
-      "desc": "shortener-style short path -> malware",
+      "desc": "short path -> malware",
       "path": "t1/threat/s/m1.html",
       "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Short link s/m1</title>\n<meta http-equiv=\"refresh\" content=\"0;url=https://testsafebrowsing.appspot.com/s/malware.html\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Short link s/m1</p>\n<p>redirecting to <code>https://testsafebrowsing.appspot.com/s/malware.html</code>...</p>\n<script>setTimeout(function(){location.href='https://testsafebrowsing.appspot.com/s/malware.html';}, 0);</script>\n</body>\n</html>\n",
       "verdict": "MALICIOUS",
-      "entry": true
+      "entry": true,
+      "entry_query": ""
     },
     {
       "id": "threat_s_e1",
-      "desc": "shortener-style short path -> EICAR",
+      "desc": "short path -> EICAR",
       "path": "t1/threat/s/e1.html",
       "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Short link s/e1</title>\n<meta http-equiv=\"refresh\" content=\"0;url=https://secure.eicar.org/eicar.com.txt\">\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Short link s/e1</p>\n<p>redirecting to <code>https://secure.eicar.org/eicar.com.txt</code>...</p>\n<script>setTimeout(function(){location.href='https://secure.eicar.org/eicar.com.txt';}, 0);</script>\n</body>\n</html>\n",
       "verdict": "MALICIOUS",
-      "entry": true
+      "entry": true,
+      "entry_query": ""
+    },
+    {
+      "id": "threat_switch",
+      "desc": "time-of-click: benign at delivery; edit later (USER)",
+      "path": "t1/threat/switch.html",
+      "html": "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>Click-time switch</title>\n</head>\n<body>\n<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Click-time switch</p>\n<p>Currently benign. Flip this page to a redirect to phishing after delivery to test time-of-click re-scan.</p>\n</body>\n</html>\n",
+      "verdict": "CLEAN",
+      "entry": false,
+      "entry_query": ""
     }
+  ],
+  "real": [
+    [
+      "real_httpbin_redir5",
+      "https://httpbin.org/redirect/5",
+      "real 5-hop 30x chain (benign end)",
+      "CLEAN"
+    ],
+    [
+      "real_httpbin_redir20",
+      "https://httpbin.org/redirect/20",
+      "real 20-hop 30x chain (guard)",
+      "CLEAN"
+    ],
+    [
+      "real_httpbin_to_phish",
+      "https://httpbin.org/redirect-to?url=https://testsafebrowsing.appspot.com/s/phishing.html",
+      "real 30x -> phishing",
+      "PHISHING"
+    ],
+    [
+      "real_httpbin_to_eicar",
+      "https://httpbin.org/redirect-to?url=https://secure.eicar.org/eicar.com.txt",
+      "real 30x -> EICAR",
+      "MALICIOUS"
+    ],
+    [
+      "real_httpbin_404",
+      "https://httpbin.org/status/404",
+      "HTTP 404",
+      "CLEAN"
+    ],
+    [
+      "real_httpbin_500",
+      "https://httpbin.org/status/500",
+      "HTTP 500",
+      "CLEAN"
+    ],
+    [
+      "real_httpbin_delay",
+      "https://httpbin.org/delay/10",
+      "slow response (10s)",
+      "CLEAN"
+    ],
+    [
+      "real_httpbin_auth",
+      "https://httpbin.org/basic-auth/user/passwd",
+      "basic-auth challenge",
+      "CLEAN"
+    ],
+    [
+      "real_badssl_expired",
+      "https://expired.badssl.com/",
+      "TLS: expired cert",
+      "CLEAN"
+    ],
+    [
+      "real_badssl_self-signed",
+      "https://self-signed.badssl.com/",
+      "TLS: self-signed cert",
+      "CLEAN"
+    ],
+    [
+      "real_badssl_wrong_host",
+      "https://wrong.host.badssl.com/",
+      "TLS: wrong-host cert",
+      "CLEAN"
+    ],
+    [
+      "real_badssl_untrusted-root",
+      "https://untrusted-root.badssl.com/",
+      "TLS: untrusted root",
+      "CLEAN"
+    ],
+    [
+      "real_badssl_revoked",
+      "https://revoked.badssl.com/",
+      "TLS: revoked cert",
+      "CLEAN"
+    ],
+    [
+      "real_badssl_no-common-name",
+      "https://no-common-name.badssl.com/",
+      "TLS: no CN",
+      "CLEAN"
+    ],
+    [
+      "real_badssl_mixed-script",
+      "https://mixed-script.badssl.com/",
+      "TLS: mixed-script host",
+      "CLEAN"
+    ],
+    [
+      "real_badssl_httpbin_mixed",
+      "https://mixed.badssl.com/",
+      "mixed active content",
+      "CLEAN"
+    ],
+    [
+      "real_plain_http",
+      "http://neverssl.com/",
+      "plain HTTP (no TLS)",
+      "CLEAN"
+    ],
+    [
+      "real_eicar_eicar_com",
+      "https://secure.eicar.org/eicar.com",
+      "EICAR file eicar.com",
+      "MALICIOUS"
+    ],
+    [
+      "real_eicar_eicar_com_txt",
+      "https://secure.eicar.org/eicar.com.txt",
+      "EICAR file eicar.com.txt",
+      "MALICIOUS"
+    ],
+    [
+      "real_eicar_eicar_com_zip",
+      "https://secure.eicar.org/eicar_com.zip",
+      "EICAR file eicar_com.zip",
+      "MALICIOUS"
+    ],
+    [
+      "real_eicar_eicarcom2_zip",
+      "https://secure.eicar.org/eicarcom2.zip",
+      "EICAR file eicarcom2.zip",
+      "MALICIOUS"
+    ],
+    [
+      "real_safe_example",
+      "https://example.com/",
+      "benign site",
+      "CLEAN"
+    ],
+    [
+      "real_safe_iana",
+      "https://www.iana.org/",
+      "benign site",
+      "CLEAN"
+    ],
+    [
+      "real_ip_v4",
+      "http://93.184.216.34/",
+      "IPv4 literal",
+      "CLEAN"
+    ],
+    [
+      "real_ip_dotless",
+      "http://1573804850/",
+      "dotless decimal IP",
+      "CLEAN"
+    ],
+    [
+      "real_ip_hex",
+      "http://0x5db8d822/",
+      "hex IP",
+      "CLEAN"
+    ],
+    [
+      "real_ip_v6",
+      "http://[2606:2800:220:1:248:1893:25c8:1946]/",
+      "IPv6 literal",
+      "CLEAN"
+    ],
+    [
+      "real_userinfo",
+      "https://example.com@testsafebrowsing.appspot.com/s/phishing.html",
+      "userinfo trick real host=phishing",
+      "PHISHING"
+    ],
+    [
+      "real_idn_puny",
+      "https://xn--80ak6aa92e.com/",
+      "punycode/IDN host",
+      "CLEAN"
+    ],
+    [
+      "real_nxdomain",
+      "http://nonexistent.invalid/",
+      "non-resolving domain",
+      "CLEAN"
+    ],
+    [
+      "real_timeout",
+      "http://10.255.255.1/",
+      "connection timeout",
+      "CLEAN"
+    ],
+    [
+      "real_ssrf_loopback",
+      "http://127.0.0.1/",
+      "loopback (must-not-fetch)",
+      "CLEAN"
+    ],
+    [
+      "real_ssrf_metadata",
+      "http://169.254.169.254/latest/meta-data/",
+      "cloud metadata (must-not-fetch)",
+      "CLEAN"
+    ]
+  ],
+  "user": [
+    [
+      "user_shortener_bitly",
+      "https://bit.ly/REPLACE",
+      "real bit.ly -> phishing-redirect",
+      "PHISHING"
+    ],
+    [
+      "user_shortener_tinyurl",
+      "https://tinyurl.com/REPLACE",
+      "real tinyurl -> eicar-drop",
+      "MALICIOUS"
+    ],
+    [
+      "user_shortener_tco",
+      "https://t.co/REPLACE",
+      "real t.co -> malware-redirect",
+      "MALICIOUS"
+    ],
+    [
+      "user_clicktime_switch",
+      "%BASE%/t1/threat/switch.html",
+      "deliver switch.html benign, then flip it to a phishing redirect and re-check",
+      "PHISHING"
+    ],
+    [
+      "user_attach_pdf_link",
+      "%BASE%/t1/threat/files/link.pdf",
+      "PDF attachment with an embedded phishing link",
+      "PHISHING"
+    ],
+    [
+      "user_attach_docx_link",
+      "%BASE%/t1/threat/files/link.docx",
+      "DOCX attachment with an embedded phishing link",
+      "PHISHING"
+    ],
+    [
+      "user_admin_policy_off",
+      "n/a",
+      "feature off per-org: URL must pass through unsandboxed",
+      "CLEAN"
+    ],
+    [
+      "user_allowlist_exact",
+      "n/a",
+      "allowlisted domain must bypass sandbox",
+      "CLEAN"
+    ],
+    [
+      "user_blocklist_sub",
+      "n/a",
+      "blocklisted subdomain must be blocked",
+      "PHISHING"
+    ],
+    [
+      "user_channel_mobile",
+      "n/a",
+      "same URL via mobile app must be sandboxed identically",
+      "PHISHING"
+    ],
+    [
+      "user_api_created",
+      "n/a",
+      "content created via API/import must be sandboxed",
+      "PHISHING"
+    ],
+    [
+      "user_notification",
+      "n/a",
+      "URL in digest/push notification must be sandboxed",
+      "PHISHING"
+    ],
+    [
+      "user_cache_expiry",
+      "n/a",
+      "URL flagged later must be blocked despite earlier allow",
+      "PHISHING"
+    ]
   ]
 }

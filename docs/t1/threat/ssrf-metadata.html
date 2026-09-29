@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>ssrf-metadata</title>
+<meta http-equiv="refresh" content="0;url=http://169.254.169.254/latest/meta-data/">
+</head>
+<body>
+<p><strong>TEST PAGE - URL SANDBOX QA</strong> - ssrf-metadata</p>
+<p>redirecting to <code>http://169.254.169.254/latest/meta-data/</code>...</p>
+<script>setTimeout(function(){location.href='http://169.254.169.254/latest/meta-data/';}, 0);</script>
+</body>
+</html>
