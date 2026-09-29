@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Redirect loop A</title>
+<meta http-equiv="refresh" content="0;url=loop-b.html">
+</head>
+<body>
+<p><strong>TEST PAGE - URL SANDBOX QA</strong> - Redirect loop A</p>
+<p>redirecting to <code>loop-b.html</code>...</p>
+<script>setTimeout(function(){location.href='loop-b.html';}, 0);</script>
+</body>
+</html>
