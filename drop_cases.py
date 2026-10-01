@@ -220,9 +220,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--base", default=DEFAULT_BASE)
     ap.add_argument("--out", default="docs")
+    ap.add_argument("--nonce", default="",
+                    help="append ?v=<nonce> to each case URL so its sha256 changes (forces a fresh sandbox scan)")
     args = ap.parse_args()
     base = args.base.rstrip("/")
     out = os.path.join(HERE, args.out)
+    q = ("?v=" + args.nonce) if args.nonce else ""
 
     build(base)
     write_file(os.path.join(out, ".nojekyll"), "")
@@ -250,7 +253,7 @@ def main():
              "# PHISHING payloads link to %s/%s/resolve/target.html (make it phishing)." % (base, VER),
              "# A sandbox verdict of CLEAN on any of these = the screenshot-only blind spot.", ""]
     for c in entries:
-        lines += ["id=%s" % c["id"], "url=%s/%s" % (base, c["path"]),
+        lines += ["id=%s" % c["id"], "url=%s/%s%s" % (base, c["path"], q),
                   "desc=%s" % c["desc"], "verdict=%s" % c["verdict"], ""]
     lines.append("# <<< DROP END")
     write_file(os.path.join(HERE, "drop.properties"), "\n".join(lines) + "\n")
