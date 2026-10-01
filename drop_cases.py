@@ -42,7 +42,7 @@ BENIGN = ("<h1>Q3 Financial Report</h1>\n"
 cases = []  # {id, path, html, verdict, entry, desc}
 
 
-def add(path, body, desc, head="", verdict="PHISHING", entry=True, cid=None):
+def add(path, body, desc, head="", verdict="MALICIOUS", entry=True, cid=None):
     full = "%s/%s.html" % (ROOT, path)
     cases.append({"id": "drop_" + (cid or path.replace("/", "_")), "path": full,
                   "html": PAGE_TMPL.format(title=path, head=head, body=body),
@@ -57,149 +57,140 @@ def raw(path, content, binary=False):
 
 
 def build(base):
-    PHISH = base + "/" + VER + "/resolve/target.html"   # the single known-phishing target
-
-    # ── Payload sub-files (dropped things that carry the phishing URL) ──
-    phish_html = "<html><body><p><a href=\"%s\">%s</a></p></body></html>" % (PHISH, PHISH)
-    raw("payload-phish.html", phish_html)
-    raw("invoice.pdf.html", phish_html)                 # double-extension payload
-    raw("payload.svg", '<svg xmlns="http://www.w3.org/2000/svg"><a href="%s">'
-                       '<text x="10" y="20">open</text></a>'
-                       '<script>//<![CDATA[\nlocation.href="%s";\n//]]></script></svg>' % (PHISH, PHISH))
-    # zip containing the phishing html
+    # ── Payload sub-files: every case drops an EXECUTABLE. The bytes are the EICAR
+    #    AV-test string (harmless, but every scanner flags it) named with .exe/.scr etc. ──
+    raw("payload.exe", EICAR)            # the dropped executable
+    raw("invoice.pdf.exe", EICAR)        # double-extension executable
+    # zip containing the executable
     zbuf = io.BytesIO()
     with zipfile.ZipFile(zbuf, "w", zipfile.ZIP_DEFLATED) as z:
-        z.writestr("report.html", phish_html)
+        z.writestr("report.exe", EICAR)
     raw("payload.zip", zbuf.getvalue(), binary=True)
 
-    def anchor(href, name="report", extra=""):
+    EXE = "payload.exe"
+
+    def anchor(href=EXE, name="report.exe", extra=""):
         return '<a id="d" href="%s" download="%s"%s>download</a>' % (href, name, extra)
 
+    # EICAR .exe built entirely client-side (no fetchable URL for the sandbox)
+    blob_exe = ("<script>var b=new Blob(['" + EICAR + "'],{type:'application/x-msdownload'});"
+                "var a=document.createElement('a');a.href=URL.createObjectURL(b);"
+                "a.download='report.exe';a.click();</script>")
+
     # ============================================================
-    # A. TIMING — benign render, drop fires after the screenshot window
+    # A. TIMING — benign render, .exe drop fires after the screenshot window
     # ============================================================
-    add("auto-download", BENIGN + anchor("payload-phish.html") +
+    add("auto-download", BENIGN + anchor() +
         "<script>document.getElementById('d').click();</script>",
-        "benign page auto-downloads an HTML file that contains the phishing URL")
-    add("delayed-10s", BENIGN + anchor("payload-phish.html") +
+        "benign page auto-downloads an .exe")
+    add("delayed-10s", BENIGN + anchor() +
         "<script>setTimeout(function(){document.getElementById('d').click();},10000);</script>",
-        "clean screenshot; file drop fires at 10s (after typical capture)")
-    add("delayed-30s", BENIGN + anchor("payload-phish.html") +
+        "clean screenshot; .exe drop fires at 10s (after typical capture)")
+    add("delayed-30s", BENIGN + anchor() +
         "<script>setTimeout(function(){document.getElementById('d').click();},30000);</script>",
-        "clean screenshot; file drop fires at 30s")
-    add("countdown", BENIGN + "<p id=c>Preparing your file (5)</p>" + anchor("payload-phish.html") +
+        "clean screenshot; .exe drop fires at 30s")
+    add("countdown", BENIGN + "<p id=c>Preparing your file (5)</p>" + anchor() +
         "<script>var n=5,t=setInterval(function(){n--;document.getElementById('c').textContent="
         "'Preparing your file ('+n+')';if(n<=0){clearInterval(t);document.getElementById('d').click();}},1000);"
         "</script>",
-        "fake 'preparing your file' countdown then drops the phishing file")
+        "fake 'preparing your file' countdown then drops an .exe")
 
     # ============================================================
     # B. INTERACTION-GATED — a headless screenshot bot never interacts, so never drops
     # ============================================================
     add("on-click", BENIGN + '<button onclick="document.getElementById(\'d\').click()">View report</button>' +
-        anchor("payload-phish.html"),
-        "drop only when the user clicks a button (screenshot bot does not click)")
-    add("on-scroll", BENIGN + "<div style='height:3000px'></div>" + anchor("payload-phish.html") +
+        anchor(),
+        "drops .exe only when the user clicks a button (screenshot bot does not click)")
+    add("on-scroll", BENIGN + "<div style='height:3000px'></div>" + anchor() +
         "<script>addEventListener('scroll',function(){document.getElementById('d').click();},{once:true});</script>",
-        "drop only on scroll")
-    add("on-mousemove", BENIGN + anchor("payload-phish.html") +
+        "drops .exe only on scroll")
+    add("on-mousemove", BENIGN + anchor() +
         "<script>addEventListener('mousemove',function(){document.getElementById('d').click();},{once:true});</script>",
-        "drop only on first mouse movement")
-    add("on-focus", BENIGN + anchor("payload-phish.html") +
+        "drops .exe only on first mouse movement")
+    add("on-focus", BENIGN + anchor() +
         "<script>addEventListener('visibilitychange',function(){document.getElementById('d').click();});"
         "addEventListener('focus',function(){document.getElementById('d').click();});</script>",
-        "drop only on tab focus / visibilitychange")
+        "drops .exe only on tab focus / visibilitychange")
 
     # ============================================================
     # C. CLIENT-SIDE-ONLY PAYLOAD — no fetchable URL for the sandbox; screenshot benign
     # ============================================================
-    add("blob-html", BENIGN +
-        "<script>var h='<html><body><a href=\\'" + PHISH + "\\'>" + PHISH + "</a></body></html>';"
-        "var b=new Blob([h],{type:'text/html'});var a=document.createElement('a');"
-        "a.href=URL.createObjectURL(b);a.download='report.html';a.click();</script>",
-        "payload HTML built client-side as a Blob (no URL to fetch) — phishing link inside")
-    add("blob-eicar", BENIGN +
-        "<script>var b=new Blob(['" + EICAR + "'],{type:'application/octet-stream'});"
-        "var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='report.com';a.click();</script>",
-        "EICAR test marker dropped via client-side Blob — malware-drop vs clean screenshot", verdict="MALICIOUS")
+    add("blob-html", BENIGN + blob_exe,
+        "EICAR .exe built client-side as a Blob (no URL to fetch)")
+    add("blob-eicar", BENIGN + blob_exe,
+        "EICAR .exe dropped via client-side Blob — malware-drop vs clean screenshot")
     add("data-uri-download", BENIGN +
-        "<script>var p='<html><body><a href=\\'" + PHISH + "\\'>x</a></body></html>';"
-        "var a=document.createElement('a');a.href='data:text/html;base64,'+btoa(p);"
-        "a.download='report.html';a.click();</script>",
-        "payload delivered as a base64 data: URI download (phishing link inside)")
+        "<script>var a=document.createElement('a');a.href='data:application/x-msdownload;base64,'"
+        "+btoa('" + EICAR + "');a.download='report.exe';a.click();</script>",
+        ".exe delivered as a base64 data: URI download")
     add("js-decoded", BENIGN +
-        "<script>var u=atob('" + _b64(PHISH) + "');var h='<a href=\"'+u+'\">x</a>';"
-        "var b=new Blob([h],{type:'text/html'});var a=document.createElement('a');"
-        "a.href=URL.createObjectURL(b);a.download='report.html';a.click();</script>",
-        "phishing URL base64-decoded in JS then dropped (static HTML has no URL)")
+        "<script>var d=atob('" + _b64(EICAR) + "');var b=new Blob([d],{type:'application/x-msdownload'});"
+        "var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='report.exe';a.click();</script>",
+        "EICAR .exe base64-decoded in JS then dropped")
 
     # ============================================================
-    # D. CLOAKING — benign to the headless/screenshot bot, drop to a real user
+    # D. CLOAKING — benign to the headless/screenshot bot, .exe to a real user
     # ============================================================
-    add("cloak-webdriver", BENIGN + anchor("payload-phish.html") +
+    add("cloak-webdriver", BENIGN + anchor() +
         "<script>if(!navigator.webdriver){document.getElementById('d').click();}</script>",
-        "serves benign to navigator.webdriver (screenshot bot); drops phishing to a real browser")
-    add("cloak-headless-ua", BENIGN + anchor("payload-phish.html") +
+        "serves benign to navigator.webdriver (screenshot bot); drops .exe to a real browser")
+    add("cloak-headless-ua", BENIGN + anchor() +
         "<script>if(!/Headless|PhantomJS|bot|crawler/i.test(navigator.userAgent))"
         "{document.getElementById('d').click();}</script>",
-        "serves benign to headless/bot user-agents; drops phishing otherwise")
-    add("cloak-interaction", BENIGN + "<div style='height:2000px'></div>" + anchor("payload-phish.html") +
+        "serves benign to headless/bot user-agents; drops .exe otherwise")
+    add("cloak-interaction", BENIGN + "<div style='height:2000px'></div>" + anchor() +
         "<script>var m=false,s=false;addEventListener('mousemove',function(){m=true;f();});"
         "addEventListener('scroll',function(){s=true;f();});function f(){if(m&&s)"
         "document.getElementById('d').click();}</script>",
-        "only drops after BOTH real mousemove and scroll (no interaction -> benign)")
+        "drops .exe only after BOTH real mousemove and scroll (no interaction -> benign)")
 
     # ============================================================
-    # E. DUAL NATURE — one URL is a viewable benign site AND a dropper / swapper
+    # E. DUAL NATURE — one URL is a viewable benign site AND an .exe dropper / swapper
     # ============================================================
     add("dual-benign-site",
         "<header><h1>Acme Reports Portal</h1></header>"
         "<main><p>Welcome. Browse your available reports below.</p>"
         "<ul><li>Q1 summary</li><li>Q2 summary</li><li>Q3 summary</li></ul></main>" +
-        anchor("payload-phish.html") +
+        anchor() +
         "<script>document.getElementById('d').click();</script>",
-        "renders a full benign-looking portal (clean screenshot) AND silently drops phishing file")
+        "renders a full benign-looking portal (clean screenshot) AND silently drops an .exe")
     add("dual-decoy-login",
         "<h2>Demo Login (test)</h2><form onsubmit='return false'>"
         "<input placeholder='user'><input type=password placeholder='pass'>"
-        "<button>Sign in</button></form>" + anchor("payload-phish.html") +
+        "<button>Sign in</button></form>" + anchor() +
         "<script>document.getElementById('d').click();</script>",
-        "harmless demo login form (benign screenshot) while dropping the phishing file")
+        "harmless demo login form (benign screenshot) while dropping an .exe")
     add("render-then-swap", BENIGN +
-        "<script>setTimeout(function(){document.body.innerHTML="
-        "'<a href=\"" + PHISH + "\">" + PHISH + "</a>';},12000);</script>",
-        "renders benign, then swaps the DOM to the phishing link after the capture window")
+        "<script>setTimeout(function(){var a=document.createElement('a');a.href='" + EXE + "';"
+        "a.download='report.exe';a.click();document.body.innerHTML='<h1>Session expired</h1>';},12000);</script>",
+        "renders benign, then drops an .exe and swaps the DOM after the capture window")
 
     # ============================================================
-    # F. CROSS-MEDIUM DROP — the dropped FILE itself carries the phishing URL
+    # F. .EXE DELIVERY VARIANTS — different executable shapes / disguises
     # ============================================================
-    add("drops-pdf", BENIGN + anchor("../drop/dropped.pdf", "report.pdf") +
+    add("drops-pdf", BENIGN + anchor(EXE, "report.exe") +
         "<script>document.getElementById('d').click();</script>",
-        "benign page drops a PDF that contains the phishing URL",
-        cid="drops-pdf")
-    add("drops-docx", BENIGN + anchor("../drop/dropped.docx", "report.docx") +
+        "benign page drops an .exe (direct)", cid="drops-pdf")
+    add("drops-docx", BENIGN + anchor(EXE, "SecurityUpdate.exe") +
         "<script>document.getElementById('d').click();</script>",
-        "benign page drops a DOCX that contains the phishing URL",
-        cid="drops-docx")
+        "benign page drops an .exe disguised as SecurityUpdate.exe", cid="drops-docx")
     add("drops-zip", BENIGN + anchor("payload.zip", "report.zip") +
         "<script>document.getElementById('d').click();</script>",
-        "benign page drops a ZIP containing a phishing HTML")
-    add("drops-svg", BENIGN + anchor("payload.svg", "report.svg") +
+        "benign page drops a ZIP containing an .exe")
+    add("drops-svg", BENIGN + anchor(EXE, "report.scr") +
         "<script>document.getElementById('d').click();</script>",
-        "benign page drops an SVG that scripts/anchors to the phishing URL")
-    add("drops-double-ext", BENIGN + anchor("invoice.pdf.html", "invoice.pdf") +
+        "benign page drops an executable with a .scr extension")
+    add("drops-double-ext", BENIGN + anchor("invoice.pdf.exe", "invoice.pdf.exe") +
         "<script>document.getElementById('d').click();</script>",
-        "benign page drops invoice.pdf.html (double extension) carrying the phishing URL")
+        "benign page drops invoice.pdf.exe (double-extension executable)")
 
     # ============================================================
-    # G. BOTH payloads at once — does catching one mask the other?
+    # G. BOTH — visible download link AND an auto .exe drop
     # ============================================================
     add("phish-and-drop",
-        "<p>Download your statement:</p><p><a href=\"" + PHISH + "\">" + PHISH + "</a></p>" +
-        "<script>var b=new Blob(['" + EICAR + "'],{type:'application/octet-stream'});"
-        "var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='stmt.com';a.click();</script>",
-        "renders a visible phishing link AND drops an EICAR marker (two mediums in one URL)",
-        verdict="MALICIOUS")
+        "<p>Download your statement:</p>" + anchor(EXE, "statement.exe") +
+        "<script>document.getElementById('d').click();</script>",
+        "renders a visible download link AND auto-drops an .exe")
 
 
 def _b64(s):
@@ -249,8 +240,8 @@ def main():
     # properties block
     lines = ["# >>> DROP BEGIN",
              "# Screenshot-blind-spot / file-drop cases (generated by drop_cases.py).",
-             "# Each ENTRY page renders a benign webpage (clean screenshot) but drops/reveals a payload.",
-             "# PHISHING payloads link to %s/%s/resolve/target.html (make it phishing)." % (base, VER),
+             "# Each ENTRY page renders a benign webpage (clean screenshot) but DROPS AN .EXE",
+             "# (bytes are the harmless EICAR AV-test string, named .exe/.scr/double-ext/in-zip).",
              "# A sandbox verdict of CLEAN on any of these = the screenshot-only blind spot.", ""]
     for c in entries:
         lines += ["id=%s" % c["id"], "url=%s/%s%s" % (base, c["path"], q),
